@@ -81,8 +81,8 @@ app.use('/api', apiRoutes);
 // 404 處理
 app.use((req, res) => {
   res.status(404).render('error', {
-    message: '頁面不存在',
-    error: { status: 404, stack: '您訪問的頁面不存在' },
+    message: 'Page not found',
+    error: { status: 404, stack: 'The page you are looking for does not exist.' },
     user: req.session ? req.session.username : null,
     isAdmin: req.session ? req.session.isAdmin : false
   });
@@ -90,9 +90,9 @@ app.use((req, res) => {
 
 // 錯誤處理中間件
 app.use((err, req, res, next) => {
-  console.error('伺服器錯誤:', err);
+  console.error('Server error:', err);
   res.status(err.status || 500).render('error', {
-    message: err.message || '伺服器錯誤',
+    message: err.message || 'Server error',
     error: process.env.NODE_ENV === 'development' ? err : {},
     user: req.session ? req.session.username : null,
     isAdmin: req.session ? req.session.isAdmin : false
@@ -102,14 +102,14 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log('========================================');
-  console.log('🚀 部落格平台伺服器已啟動');
+  console.log('🚀 Blog Platform server started');
   console.log('========================================');
-  console.log(`✓ 伺服器運行於: http://localhost:${PORT}`);
-  console.log(`✓ 環境模式: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`✓ Listening on: http://localhost:${PORT}`);
+  console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log('========================================');
-  console.log('管理員登入資訊:');
-  console.log('  用戶名: admin');
-  console.log('  密碼: 123456');
+  console.log('Admin credentials:');
+  console.log('  Username: admin');
+  console.log('  Password: 123456');
   console.log('========================================');
 });
 

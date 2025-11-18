@@ -18,8 +18,8 @@ const requireGuest = (req, res, next) => {
 const requireAdmin = (req, res, next) => {
   if (!req.session || !req.session.isAdmin) {
     return res.status(403).render('error', {
-      message: '拒絕存取',
-      error: { status: 403, stack: '您沒有權限訪問此頁面' },
+      message: 'Access denied',
+      error: { status: 403, stack: 'You do not have permission to access this page.' },
       user: req.session ? req.session.username : null,
       isAdmin: false
     });
@@ -34,10 +34,10 @@ const checkBanned = async (req, res, next) => {
     try {
       const user = await User.findById(req.session.userId);
       if (user && user.isBanned) {
-        req.session = null; // 清除 session
+        req.session = null; // clear session
         return res.render('error', {
-          message: '帳號已被禁止',
-          error: { status: 403, stack: '您的帳號已被管理員禁止使用，請聯絡管理員' },
+          message: 'Account banned',
+          error: { status: 403, stack: 'Your account has been banned. Please contact the administrator.' },
           user: null,
           isAdmin: false
         });

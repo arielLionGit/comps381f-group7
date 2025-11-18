@@ -5,28 +5,28 @@ const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const { requireAdmin } = require('../middleware/auth');
 
-// 管理員儀表板
+// Admin dashboard
 router.get('/dashboard', requireAdmin, async (req, res) => {
   try {
-    // 獲取統計數據
+    // Stats
     const totalUsers = await User.countDocuments();
     const totalPosts = await Post.countDocuments();
     const totalComments = await Comment.countDocuments();
     const bannedUsers = await User.countDocuments({ isBanned: true });
 
-    // 獲取最近註冊的用戶
+    // Recent users
     const recentUsers = await User.find()
       .sort({ createdAt: -1 })
       .limit(10)
       .select('-password');
 
-    // 獲取最活躍的用戶（依登入次數）
+    // Most active users
     const activeUsers = await User.find()
       .sort({ loginCount: -1 })
       .limit(10)
       .select('-password');
 
-    // 獲取最近的文章
+    // Recent posts
     const recentPosts = await Post.find()
       .sort({ createdAt: -1 })
       .limit(10)
@@ -46,9 +46,9 @@ router.get('/dashboard', requireAdmin, async (req, res) => {
       isAdmin: true
     });
   } catch (error) {
-    console.error('載入管理員儀表板錯誤:', error);
+    console.error('Error loading admin dashboard:', error);
     res.status(500).render('error', {
-      message: '無法載入管理員儀表板',
+      message: 'Unable to load admin dashboard',
       error: error,
       user: req.session.username,
       isAdmin: true
@@ -56,7 +56,7 @@ router.get('/dashboard', requireAdmin, async (req, res) => {
   }
 });
 
-// 用戶管理頁面
+// User management
 router.get('/users', requireAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -80,9 +80,9 @@ router.get('/users', requireAdmin, async (req, res) => {
       isAdmin: true
     });
   } catch (error) {
-    console.error('載入用戶列表錯誤:', error);
+    console.error('Error loading user list:', error);
     res.status(500).render('error', {
-      message: '無法載入用戶列表',
+      message: 'Unable to load user list',
       error: error,
       user: req.session.username,
       isAdmin: true
@@ -90,7 +90,7 @@ router.get('/users', requireAdmin, async (req, res) => {
   }
 });
 
-// 禁止用戶
+// Ban user
 router.post('/users/:id/ban', requireAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -98,7 +98,7 @@ router.post('/users/:id/ban', requireAdmin, async (req, res) => {
     if (!user) {
       return res.status(404).json({ 
         success: false, 
-        message: '用戶不存在' 
+        message: 'User not found' 
       });
     }
 
@@ -107,18 +107,18 @@ router.post('/users/:id/ban', requireAdmin, async (req, res) => {
 
     res.json({ 
       success: true, 
-      message: '用戶已被禁止' 
+      message: 'User has been banned' 
     });
   } catch (error) {
-    console.error('禁止用戶錯誤:', error);
+    console.error('Error banning user:', error);
     res.status(500).json({ 
       success: false, 
-      message: '操作失敗' 
+      message: 'Operation failed' 
     });
   }
 });
 
-// 解除禁止用戶
+// Unban user
 router.post('/users/:id/unban', requireAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -126,7 +126,7 @@ router.post('/users/:id/unban', requireAdmin, async (req, res) => {
     if (!user) {
       return res.status(404).json({ 
         success: false, 
-        message: '用戶不存在' 
+        message: 'User not found' 
       });
     }
 
@@ -135,37 +135,37 @@ router.post('/users/:id/unban', requireAdmin, async (req, res) => {
 
     res.json({ 
       success: true, 
-      message: '已解除禁止' 
+      message: 'User has been unbanned' 
     });
   } catch (error) {
-    console.error('解除禁止錯誤:', error);
+    console.error('Error unbanning user:', error);
     res.status(500).json({ 
       success: false, 
-      message: '操作失敗' 
+      message: 'Operation failed' 
     });
   }
 });
 
-// 查看用戶詳情
+// User detail
 router.get('/users/:id', requireAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
     
     if (!user) {
       return res.status(404).render('error', {
-        message: '用戶不存在',
+        message: 'User not found',
         error: { status: 404 },
         user: req.session.username,
         isAdmin: true
       });
     }
 
-    // 獲取用戶的文章
+    // User posts
     const posts = await Post.find({ author: user._id })
       .sort({ createdAt: -1 })
       .limit(10);
 
-    // 獲取用戶的留言
+    // User comments
     const comments = await Comment.find({ author: user._id })
       .sort({ createdAt: -1 })
       .limit(10)
@@ -179,9 +179,9 @@ router.get('/users/:id', requireAdmin, async (req, res) => {
       isAdmin: true
     });
   } catch (error) {
-    console.error('載入用戶詳情錯誤:', error);
+    console.error('Error loading user detail:', error);
     res.status(500).render('error', {
-      message: '無法載入用戶詳情',
+      message: 'Unable to load user detail',
       error: error,
       user: req.session.username,
       isAdmin: true
@@ -189,7 +189,7 @@ router.get('/users/:id', requireAdmin, async (req, res) => {
   }
 });
 
-// 文章管理頁面
+// Post management
 router.get('/posts', requireAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -213,9 +213,9 @@ router.get('/posts', requireAdmin, async (req, res) => {
       isAdmin: true
     });
   } catch (error) {
-    console.error('載入文章列表錯誤:', error);
+    console.error('Error loading post list:', error);
     res.status(500).render('error', {
-      message: '無法載入文章列表',
+      message: 'Unable to load post list',
       error: error,
       user: req.session.username,
       isAdmin: true
@@ -223,7 +223,7 @@ router.get('/posts', requireAdmin, async (req, res) => {
   }
 });
 
-// 留言管理頁面
+// Comment management
 router.get('/comments', requireAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -248,9 +248,9 @@ router.get('/comments', requireAdmin, async (req, res) => {
       isAdmin: true
     });
   } catch (error) {
-    console.error('載入留言列表錯誤:', error);
+    console.error('Error loading comment list:', error);
     res.status(500).render('error', {
-      message: '無法載入留言列表',
+      message: 'Unable to load comment list',
       error: error,
       user: req.session.username,
       isAdmin: true

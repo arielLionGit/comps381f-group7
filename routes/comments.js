@@ -10,9 +10,9 @@ router.post('/post/:postId/comment', requireAuth, [
   body('content')
     .trim()
     .notEmpty()
-    .withMessage('留言內容不能為空')
+    .withMessage('Comment content is required')
     .isLength({ max: 1000 })
-    .withMessage('留言內容不能超過 1000 個字元')
+    .withMessage('Comment cannot exceed 1000 characters')
 ], async (req, res) => {
   const errors = validationResult(req);
   
@@ -27,16 +27,16 @@ router.post('/post/:postId/comment', requireAuth, [
   const { postId } = req.params;
 
   try {
-    // 檢查文章是否存在
+    // Ensure post exists
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ 
         success: false, 
-        message: '文章不存在' 
+        message: 'Post not found' 
       });
     }
 
-    // 建立留言
+    // Create comment
     const comment = new Comment({
       content,
       author: req.session.userId,
@@ -48,10 +48,10 @@ router.post('/post/:postId/comment', requireAuth, [
 
     res.redirect('/post/' + postId);
   } catch (error) {
-    console.error('建立留言錯誤:', error);
+    console.error('Error creating comment:', error);
     res.status(500).json({ 
       success: false, 
-      message: '建立留言失敗，請稍後再試' 
+      message: 'Failed to create comment, please try again later' 
     });
   }
 });
@@ -64,15 +64,15 @@ router.post('/comment/:id/delete', requireAuth, async (req, res) => {
     if (!comment) {
       return res.status(404).json({ 
         success: false, 
-        message: '留言不存在' 
+        message: 'Comment not found' 
       });
     }
 
-    // 檢查是否為留言作者或管理員
+    // Ensure owner/admin
     if (comment.author.toString() !== req.session.userId && !req.session.isAdmin) {
       return res.status(403).json({ 
         success: false, 
-        message: '無權限刪除此留言' 
+        message: 'You do not have permission to delete this comment' 
       });
     }
 
@@ -81,10 +81,10 @@ router.post('/comment/:id/delete', requireAuth, async (req, res) => {
 
     res.redirect('/post/' + postId);
   } catch (error) {
-    console.error('刪除留言錯誤:', error);
+    console.error('Error deleting comment:', error);
     res.status(500).json({ 
       success: false, 
-      message: '刪除留言失敗' 
+      message: 'Failed to delete comment' 
     });
   }
 });

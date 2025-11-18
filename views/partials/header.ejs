@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>部落格平台</title>
+  <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>Blog Platform</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <nav class="navbar">
     <div class="container navbar-content">
-      <a href="/" class="navbar-brand">📝 部落格平台</a>
+      <a href="/" class="navbar-brand">📝 Blog Platform</a>
       <ul class="navbar-menu">
-        <li><a href="/">首頁</a></li>
-        <li><a href="/search">搜尋</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/search">Search</a></li>
         <% if (user) { %>
-          <li><a href="/create">發表文章</a></li>
+          <li><a href="/create">Create Post</a></li>
           <% if (isAdmin) { %>
-            <li><a href="/admin/dashboard">管理員面板</a></li>
+            <li><a href="/admin/dashboard">Admin Dashboard</a></li>
           <% } %>
           <li class="navbar-user">
             <span class="navbar-username">👤 <%= user %></span>
-            <a href="/logout" class="btn btn-sm btn-outline">登出</a>
+            <a href="/logout" class="btn btn-sm btn-outline">Logout</a>
           </li>
         <% } else { %>
-          <li><a href="/login" class="btn btn-sm btn-primary">登入</a></li>
-          <li><a href="/register" class="btn btn-sm btn-secondary">註冊</a></li>
+          <li><a href="/login" class="btn btn-sm btn-primary">Login</a></li>
+          <li><a href="/register" class="btn btn-sm btn-secondary">Register</a></li>
         <% } %>
       </ul>
     </div>

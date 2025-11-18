@@ -2,14 +2,14 @@
 
 <div class="container">
   <div class="post-list">
-    <h1 style="margin-bottom: 2rem;">最新文章</h1>
+    <h1 style="margin-bottom: 2rem;">Latest Posts</h1>
     
     <% if (posts.length === 0) { %>
       <div class="card">
         <div class="card-body text-center">
-          <p>目前還沒有任何文章</p>
+          <p>No posts have been published yet.</p>
           <% if (user || isAdmin) { %>
-            <a href="/create" class="btn btn-primary mt-2">發表第一篇文章</a>
+            <a href="/create" class="btn btn-primary mt-2">Publish the first post</a>
           <% } %>
 
         </div>
@@ -22,8 +22,8 @@
           </h2>
           <div class="post-meta">
             <span>👤 <%= post.authorName %></span>
-            <span>📅 <%= new Date(post.createdAt).toLocaleDateString('zh-TW') %></span>
-            <span>👁️ <%= post.viewCount %> 次瀏覽</span>
+            <span>📅 <%= new Date(post.createdAt).toLocaleDateString('en-US') %></span>
+            <span>👁️ <%= post.viewCount %> views</span>
           </div>
           <div class="post-excerpt">
             <%= post.content.substring(0, 200) %><%= post.content.length > 200 ? '...' : '' %>
@@ -39,11 +39,11 @@
       <% }) %>
     <% } %>
 
-    <!-- 分頁 -->
+    <!-- Pagination -->
     <% if (totalPages > 1) { %>
       <div class="pagination">
         <% if (currentPage > 1) { %>
-          <a href="/?page=<%= currentPage - 1 %>">上一頁</a>
+          <a href="/?page=<%= currentPage - 1 %>">Previous</a>
         <% } %>
         
         <% for (let i = 1; i <= totalPages; i++) { %>
@@ -55,7 +55,7 @@
         <% } %>
         
         <% if (currentPage < totalPages) { %>
-          <a href="/?page=<%= currentPage + 1 %>">下一頁</a>
+          <a href="/?page=<%= currentPage + 1 %>">Next</a>
         <% } %>
       </div>
     <% } %>

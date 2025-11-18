@@ -6,10 +6,10 @@
     
     <div class="post-detail-meta">
       <span>👤 <%= post.authorName %></span>
-      <span>📅 <%= new Date(post.createdAt).toLocaleString('zh-TW') %></span>
-      <span>👁️ <%= post.viewCount %> 次瀏覽</span>
+      <span>📅 <%= new Date(post.createdAt).toLocaleString('en-US') %></span>
+      <span>👁️ <%= post.viewCount %> views</span>
       <% if (post.updatedAt && post.updatedAt.getTime() !== post.createdAt.getTime()) { %>
-        <span>✏️ 最後編輯：<%= new Date(post.updatedAt).toLocaleString('zh-TW') %></span>
+        <span>✏️ Last edited: <%= new Date(post.updatedAt).toLocaleString('en-US') %></span>
       <% } %>
     </div>
 
@@ -24,7 +24,7 @@
     <% if (post.images && post.images.length > 0) { %>
       <div class="post-images">
         <% post.images.forEach(image => { %>
-          <img src="<%= image.data || image.path %>" alt="<%= image.filename || '文章圖片' %>" class="post-image">
+          <img src="<%= image.data || image.path %>" alt="<%= image.filename || 'Post image' %>" class="post-image">
         <% }) %>
       </div>
     <% } %>
@@ -35,53 +35,53 @@
 
     <% if (userId && (userId === post.author._id.toString() || isAdmin)) { %>
       <div class="post-actions">
-        <a href="/post/<%= post._id %>/edit" class="btn btn-secondary">編輯文章</a>
-        <form action="/post/<%= post._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('確定要刪除這篇文章嗎？');">
-          <button type="submit" class="btn btn-danger">刪除文章</button>
+        <a href="/post/<%= post._id %>/edit" class="btn btn-secondary">Edit Post</a>
+        <form action="/post/<%= post._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this post?');">
+          <button type="submit" class="btn btn-danger">Delete Post</button>
         </form>
       </div>
     <% } %>
   </div>
 
-  <!-- 留言區 -->
+  <!-- Comments -->
   <div class="comments-section">
-    <h2 class="comments-title">留言 (<%= comments.length %>)</h2>
+    <h2 class="comments-title">Comments (<%= comments.length %>)</h2>
 
     <% if (comments.length > 0) { %>
       <% comments.forEach(comment => { %>
         <div class="comment-item">
           <div class="comment-header">
             <span class="comment-author"><%= comment.authorName %></span>
-            <span class="comment-date"><%= new Date(comment.createdAt).toLocaleString('zh-TW') %></span>
+            <span class="comment-date"><%= new Date(comment.createdAt).toLocaleString('en-US') %></span>
           </div>
           <div class="comment-content"><%= comment.content %></div>
           <% if (userId && (userId === comment.author._id.toString() || isAdmin)) { %>
-            <form action="/comment/<%= comment._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('確定要刪除這則留言嗎？');">
-              <button type="submit" class="btn btn-sm btn-danger">刪除</button>
+            <form action="/comment/<%= comment._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Delete this comment?');">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
             </form>
           <% } %>
         </div>
       <% }) %>
     <% } else { %>
-      <p style="color: var(--text-light);">目前還沒有留言</p>
+      <p style="color: var(--text-light);">No comments yet.</p>
     <% } %>
 
-    <!-- 留言表單 -->
+    <!-- Comment form -->
     <% if (user || isAdmin) { %>
 
       <div class="comment-form">
-        <h3>發表留言</h3>
+        <h3>Leave a Comment</h3>
         <form action="/post/<%= post._id %>/comment" method="POST">
           <div class="form-group">
-            <textarea name="content" class="form-control" placeholder="寫下您的留言..." required maxlength="1000"></textarea>
+            <textarea name="content" class="form-control" placeholder="Write your comment..." required maxlength="1000"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">送出留言</button>
+          <button type="submit" class="btn btn-primary">Submit Comment</button>
         </form>
       </div>
     <% } else { %>
       <div class="comment-form">
         <p style="text-align: center; color: var(--text-light);">
-          請 <a href="/login" style="color: var(--primary-color);">登入</a> 後發表留言
+          Please <a href="/login" style="color: var(--primary-color);">log in</a> to leave a comment.
         </p>
       </div>
     <% } %>

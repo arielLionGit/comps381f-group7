@@ -31,9 +31,9 @@ router.get('/', async (req, res) => {
       isAdmin: req.session ? req.session.isAdmin : false
     });
   } catch (error) {
-    console.error('獲取文章列表錯誤:', error);
+    console.error('Error fetching posts:', error);
     res.status(500).render('error', {
-      message: '無法載入文章列表',
+      message: 'Unable to load posts',
       error: error,
       user: req.session ? req.session.username : null,
       isAdmin: req.session ? req.session.isAdmin : false
@@ -55,13 +55,13 @@ router.post('/create', requireAuth, upload.array('images', 5), [
   body('title')
     .trim()
     .notEmpty()
-    .withMessage('標題不能為空')
+    .withMessage('Title is required')
     .isLength({ max: 200 })
-    .withMessage('標題不能超過 200 個字元'),
+    .withMessage('Title cannot exceed 200 characters'),
   body('content')
     .trim()
     .notEmpty()
-    .withMessage('內容不能為空'),
+    .withMessage('Content is required'),
   body('tags')
     .optional()
     .trim()
@@ -79,7 +79,7 @@ router.post('/create', requireAuth, upload.array('images', 5), [
   const { title, content, tags } = req.body;
 
   try {
-    // 處理圖片 - 轉換為 Base64
+    // Convert images to Base64
     const images = req.files ? req.files.map(file => {
       const base64Data = file.buffer.toString('base64');
       const dataUri = `data:${file.mimetype};base64,${base64Data}`;
@@ -90,10 +90,10 @@ router.post('/create', requireAuth, upload.array('images', 5), [
       };
     }) : [];
 
-    // 處理標籤
+    // Process tags
     const tagArray = tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
 
-    // 建立文章
+    // Create post
     const post = new Post({
       title,
       content,
@@ -107,10 +107,10 @@ router.post('/create', requireAuth, upload.array('images', 5), [
 
     res.redirect('/post/' + post._id);
   } catch (error) {
-    console.error('建立文章錯誤:', error);
+    console.error('Error creating post:', error);
     
     res.render('post-create', {
-      errors: [{ msg: '建立文章失敗，請稍後再試' }],
+      errors: [{ msg: 'Failed to create post, please try again later' }],
       user: req.session.username,
       isAdmin: req.session.isAdmin
     });
@@ -124,17 +124,17 @@ router.get('/post/:id', async (req, res) => {
     
     if (!post) {
       return res.status(404).render('error', {
-        message: '文章不存在',
+        message: 'Post not found',
         error: { status: 404 },
         user: req.session ? req.session.username : null,
         isAdmin: req.session ? req.session.isAdmin : false
       });
     }
 
-    // 增加瀏覽次數
+    // Increment view count
     await post.incrementViewCount();
 
-    // 獲取留言
+    // Fetch comments
     const comments = await Comment.find({ post: post._id })
       .sort({ createdAt: -1 })
       .populate('author', 'username');
@@ -147,9 +147,9 @@ router.get('/post/:id', async (req, res) => {
       isAdmin: req.session ? req.session.isAdmin : false
     });
   } catch (error) {
-    console.error('獲取文章錯誤:', error);
+    console.error('Error loading post:', error);
     res.status(500).render('error', {
-      message: '無法載入文章',
+      message: 'Unable to load post',
       error: error,
       user: req.session ? req.session.username : null,
       isAdmin: req.session ? req.session.isAdmin : false
@@ -164,17 +164,17 @@ router.get('/post/:id/edit', requireAuth, async (req, res) => {
     
     if (!post) {
       return res.status(404).render('error', {
-        message: '文章不存在',
+        message: 'Post not found',
         error: { status: 404 },
         user: req.session.username,
         isAdmin: req.session.isAdmin
       });
     }
 
-    // 檢查是否為作者或管理員
+    // Ensure owner/admin
     if (post.author.toString() !== req.session.userId && !req.session.isAdmin) {
       return res.status(403).render('error', {
-        message: '無權限編輯此文章',
+        message: 'You do not have permission to edit this post',
         error: { status: 403 },
         user: req.session.username,
         isAdmin: req.session.isAdmin
@@ -188,9 +188,9 @@ router.get('/post/:id/edit', requireAuth, async (req, res) => {
       isAdmin: req.session.isAdmin
     });
   } catch (error) {
-    console.error('載入編輯頁面錯誤:', error);
+    console.error('Error loading edit page:', error);
     res.status(500).render('error', {
-      message: '無法載入編輯頁面',
+      message: 'Unable to load edit page',
       error: error,
       user: req.session.username,
       isAdmin: req.session.isAdmin
@@ -203,13 +203,13 @@ router.post('/post/:id/edit', requireAuth, upload.array('images', 5), [
   body('title')
     .trim()
     .notEmpty()
-    .withMessage('標題不能為空')
+    .withMessage('Title is required')
     .isLength({ max: 200 })
-    .withMessage('標題不能超過 200 個字元'),
+    .withMessage('Title cannot exceed 200 characters'),
   body('content')
     .trim()
     .notEmpty()
-    .withMessage('內容不能為空'),
+    .withMessage('Content is required'),
   body('tags')
     .optional()
     .trim()
@@ -221,17 +221,17 @@ router.post('/post/:id/edit', requireAuth, upload.array('images', 5), [
     
     if (!post) {
       return res.status(404).render('error', {
-        message: '文章不存在',
+        message: 'Post not found',
         error: { status: 404 },
         user: req.session.username,
         isAdmin: req.session.isAdmin
       });
     }
 
-    // 檢查是否為作者或管理員
+    // Ensure owner/admin
     if (post.author.toString() !== req.session.userId && !req.session.isAdmin) {
       return res.status(403).render('error', {
-        message: '無權限編輯此文章',
+        message: 'You do not have permission to edit this post',
         error: { status: 403 },
         user: req.session.username,
         isAdmin: req.session.isAdmin
@@ -249,14 +249,14 @@ router.post('/post/:id/edit', requireAuth, upload.array('images', 5), [
 
     const { title, content, tags, removeImages } = req.body;
 
-    // 處理要刪除的圖片（根據索引或 filename）
+    // Remove selected images
     if (removeImages) {
       const imagesToRemove = Array.isArray(removeImages) ? removeImages : [removeImages];
-      // 如果 removeImages 是索引陣列，過濾掉對應的圖片
+      // Remove by index
       post.images = post.images.filter((img, index) => !imagesToRemove.includes(index.toString()));
     }
 
-    // 處理新上傳的圖片 - 轉換為 Base64
+    // Handle new uploads (Base64)
     if (req.files && req.files.length > 0) {
       const newImages = req.files.map(file => {
         const base64Data = file.buffer.toString('base64');
@@ -270,10 +270,10 @@ router.post('/post/:id/edit', requireAuth, upload.array('images', 5), [
       post.images.push(...newImages);
     }
 
-    // 處理標籤
+    // Process tags
     const tagArray = tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
 
-    // 更新文章
+    // Update post
     post.title = title;
     post.content = content;
     post.tags = tagArray;
@@ -283,12 +283,12 @@ router.post('/post/:id/edit', requireAuth, upload.array('images', 5), [
 
     res.redirect('/post/' + post._id);
   } catch (error) {
-    console.error('更新文章錯誤:', error);
+    console.error('Error updating post:', error);
     
     const post = await Post.findById(req.params.id);
     res.render('post-edit', {
       post,
-      errors: [{ msg: '更新文章失敗，請稍後再試' }],
+      errors: [{ msg: 'Failed to update post, please try again later' }],
       user: req.session.username,
       isAdmin: req.session.isAdmin
     });
@@ -301,12 +301,12 @@ router.post('/post/:id/delete', requireAuth, async (req, res) => {
     const post = await Post.findById(req.params.id);
     
     if (!post) {
-      return res.status(404).json({ success: false, message: '文章不存在' });
+      return res.status(404).json({ success: false, message: 'Post not found' });
     }
 
     // 檢查是否為作者或管理員
     if (post.author.toString() !== req.session.userId && !req.session.isAdmin) {
-      return res.status(403).json({ success: false, message: '無權限刪除此文章' });
+      return res.status(403).json({ success: false, message: 'You do not have permission to delete this post' });
     }
 
     // 刪除文章的留言
@@ -317,8 +317,8 @@ router.post('/post/:id/delete', requireAuth, async (req, res) => {
 
     res.redirect('/');
   } catch (error) {
-    console.error('刪除文章錯誤:', error);
-    res.status(500).json({ success: false, message: '刪除文章失敗' });
+    console.error('Error deleting post:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete post' });
   }
 });
 

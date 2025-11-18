@@ -2,12 +2,12 @@
 
 <div class="container">
   <div class="post-list">
-    <h1 style="margin-bottom: 2rem;">標籤：#<%= tag %></h1>
+    <h1 style="margin-bottom: 2rem;">Tag: #<%= tag %></h1>
     
     <% if (posts.length === 0) { %>
       <div class="card">
         <div class="card-body text-center">
-          <p>此標籤下還沒有文章</p>
+          <p>No posts under this tag yet.</p>
         </div>
       </div>
     <% } else { %>
@@ -18,8 +18,8 @@
           </h2>
           <div class="post-meta">
             <span>👤 <%= post.authorName %></span>
-            <span>📅 <%= new Date(post.createdAt).toLocaleDateString('zh-TW') %></span>
-            <span>👁️ <%= post.viewCount %> 次瀏覽</span>
+            <span>📅 <%= new Date(post.createdAt).toLocaleDateString('en-US') %></span>
+            <span>👁️ <%= post.viewCount %> views</span>
           </div>
           <div class="post-excerpt">
             <%= post.content.substring(0, 200) %><%= post.content.length > 200 ? '...' : '' %>

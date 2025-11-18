@@ -1,39 +1,39 @@
 <%- include('../partials/header') %>
 
 <div class="container admin-dashboard">
-  <h1 style="margin-bottom: 2rem;">用戶詳情</h1>
+  <h1 style="margin-bottom: 2rem;">User Details</h1>
 
   <div class="card mb-3">
-    <div class="card-header">基本資訊</div>
+    <div class="card-header">Basic Info</div>
     <div class="card-body">
       <table class="table">
         <tr>
-          <th style="width: 200px;">用戶名</th>
+          <th style="width: 200px;">Username</th>
           <td><%= targetUser.username %></td>
         </tr>
         <tr>
-          <th>電子郵件</th>
+          <th>Email</th>
           <td><%= targetUser.email %></td>
         </tr>
         <tr>
-          <th>註冊時間</th>
-          <td><%= new Date(targetUser.createdAt).toLocaleString('zh-TW') %></td>
+          <th>Registered At</th>
+          <td><%= new Date(targetUser.createdAt).toLocaleString('en-US') %></td>
         </tr>
         <tr>
-          <th>登入次數</th>
+          <th>Login Count</th>
           <td><%= targetUser.loginCount %></td>
         </tr>
         <tr>
-          <th>最後登入</th>
-          <td><%= targetUser.lastLogin ? new Date(targetUser.lastLogin).toLocaleString('zh-TW') : '從未登入' %></td>
+          <th>Last Login</th>
+          <td><%= targetUser.lastLogin ? new Date(targetUser.lastLogin).toLocaleString('en-US') : 'Never' %></td>
         </tr>
         <tr>
-          <th>狀態</th>
+          <th>Status</th>
           <td>
             <% if (targetUser.isBanned) { %>
-              <span style="color: var(--danger-color);">已禁止</span>
+              <span style="color: var(--danger-color);">Banned</span>
             <% } else { %>
-              <span style="color: var(--success-color);">正常</span>
+              <span style="color: var(--success-color);">Active</span>
             <% } %>
           </td>
         </tr>
@@ -41,53 +41,53 @@
       
       <div style="margin-top: 1rem;">
         <% if (targetUser.isBanned) { %>
-          <button onclick="unbanUser('<%= targetUser._id %>')" class="btn btn-success">解除禁止</button>
+          <button onclick="unbanUser('<%= targetUser._id %>')" class="btn btn-success">Unban</button>
         <% } else { %>
-          <button onclick="banUser('<%= targetUser._id %>')" class="btn btn-danger">禁止用戶</button>
+          <button onclick="banUser('<%= targetUser._id %>')" class="btn btn-danger">Ban User</button>
         <% } %>
-        <a href="/admin/users" class="btn btn-outline">返回列表</a>
+        <a href="/admin/users" class="btn btn-outline">Back to list</a>
       </div>
     </div>
   </div>
 
   <div class="card mb-3">
-    <div class="card-header">最近發表的文章</div>
+    <div class="card-header">Recent Posts</div>
     <div class="card-body">
       <% if (posts.length > 0) { %>
         <table class="table">
           <thead>
             <tr>
-              <th>標題</th>
-              <th>發表時間</th>
-              <th>瀏覽次數</th>
+              <th>Title</th>
+              <th>Published At</th>
+              <th>Views</th>
             </tr>
           </thead>
           <tbody>
             <% posts.forEach(post => { %>
               <tr>
                 <td><a href="/post/<%= post._id %>"><%= post.title %></a></td>
-                <td><%= new Date(post.createdAt).toLocaleString('zh-TW') %></td>
+                <td><%= new Date(post.createdAt).toLocaleString('en-US') %></td>
                 <td><%= post.viewCount %></td>
               </tr>
             <% }) %>
           </tbody>
         </table>
       <% } else { %>
-        <p style="color: var(--text-light);">此用戶還沒有發表任何文章</p>
+        <p style="color: var(--text-light);">This user hasn't posted anything yet.</p>
       <% } %>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-header">最近的留言</div>
+    <div class="card-header">Recent Comments</div>
     <div class="card-body">
       <% if (comments.length > 0) { %>
         <table class="table">
           <thead>
             <tr>
-              <th>內容</th>
-              <th>文章</th>
-              <th>時間</th>
+              <th>Content</th>
+              <th>Post</th>
+              <th>Time</th>
             </tr>
           </thead>
           <tbody>
@@ -95,13 +95,13 @@
               <tr>
                 <td><%= comment.content.substring(0, 50) %><%= comment.content.length > 50 ? '...' : '' %></td>
                 <td><a href="/post/<%= comment.post._id %>"><%= comment.post.title %></a></td>
-                <td><%= new Date(comment.createdAt).toLocaleString('zh-TW') %></td>
+                <td><%= new Date(comment.createdAt).toLocaleString('en-US') %></td>
               </tr>
             <% }) %>
           </tbody>
         </table>
       <% } else { %>
-        <p style="color: var(--text-light);">此用戶還沒有發表任何留言</p>
+        <p style="color: var(--text-light);">This user hasn't left any comments.</p>
       <% } %>
     </div>
   </div>
@@ -109,7 +109,7 @@
 
 <script>
 async function banUser(userId) {
-  if (!confirm('確定要禁止此用戶嗎？')) return;
+  if (!confirm('Are you sure you want to ban this user?')) return;
   
   try {
     const response = await fetch(`/admin/users/${userId}/ban`, {
@@ -121,15 +121,15 @@ async function banUser(userId) {
       alert(data.message);
       location.reload();
     } else {
-      alert('操作失敗：' + data.message);
+      alert('Action failed: ' + data.message);
     }
   } catch (error) {
-    alert('操作失敗，請稍後再試');
+    alert('Action failed, please try again later.');
   }
 }
 
 async function unbanUser(userId) {
-  if (!confirm('確定要解除禁止此用戶嗎？')) return;
+  if (!confirm('Unban this user?')) return;
   
   try {
     const response = await fetch(`/admin/users/${userId}/unban`, {
@@ -141,10 +141,10 @@ async function unbanUser(userId) {
       alert(data.message);
       location.reload();
     } else {
-      alert('操作失敗：' + data.message);
+      alert('Action failed: ' + data.message);
     }
   } catch (error) {
-    alert('操作失敗，請稍後再試');
+    alert('Action failed, please try again later.');
   }
 }
 </script>

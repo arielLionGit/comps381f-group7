@@ -1,18 +1,18 @@
 <%- include('../partials/header') %>
 
 <div class="container admin-dashboard">
-  <h1 style="margin-bottom: 2rem;">留言管理</h1>
+  <h1 style="margin-bottom: 2rem;">Comment Management</h1>
 
   <div class="card">
     <div class="card-body">
       <table class="table">
         <thead>
           <tr>
-            <th>內容</th>
-            <th>作者</th>
-            <th>文章</th>
-            <th>時間</th>
-            <th>操作</th>
+            <th>Content</th>
+            <th>Author</th>
+            <th>Post</th>
+            <th>Time</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -21,10 +21,10 @@
               <td><%= comment.content.substring(0, 100) %><%= comment.content.length > 100 ? '...' : '' %></td>
               <td><%= comment.authorName %></td>
               <td><a href="/post/<%= comment.post._id %>"><%= comment.post.title %></a></td>
-              <td><%= new Date(comment.createdAt).toLocaleString('zh-TW') %></td>
+              <td><%= new Date(comment.createdAt).toLocaleString('en-US') %></td>
               <td>
-                <form action="/comment/<%= comment._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('確定要刪除這則留言嗎？');">
-                  <button type="submit" class="btn btn-sm btn-danger">刪除</button>
+                <form action="/comment/<%= comment._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Delete this comment?');">
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                 </form>
               </td>
             </tr>
@@ -34,11 +34,11 @@
     </div>
   </div>
 
-  <!-- 分頁 -->
+  <!-- Pagination -->
   <% if (totalPages > 1) { %>
     <div class="pagination">
       <% if (currentPage > 1) { %>
-        <a href="/admin/comments?page=<%= currentPage - 1 %>">上一頁</a>
+        <a href="/admin/comments?page=<%= currentPage - 1 %>">Previous</a>
       <% } %>
       
       <% for (let i = 1; i <= totalPages; i++) { %>
@@ -50,7 +50,7 @@
       <% } %>
       
       <% if (currentPage < totalPages) { %>
-        <a href="/admin/comments?page=<%= currentPage + 1 %>">下一頁</a>
+        <a href="/admin/comments?page=<%= currentPage + 1 %>">Next</a>
       <% } %>
     </div>
   <% } %>

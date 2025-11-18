@@ -94,9 +94,9 @@ router.get('/search', async (req, res) => {
       isAdmin: req.session ? req.session.isAdmin : false
     });
   } catch (error) {
-    console.error('搜尋錯誤:', error);
+    console.error('Search error:', error);
     res.status(500).render('error', {
-      message: '搜尋失敗',
+      message: 'Search failed',
       error: error,
       user: req.session ? req.session.username : null,
       isAdmin: req.session ? req.session.isAdmin : false
@@ -120,9 +120,9 @@ router.get('/tag/:tag', async (req, res) => {
       isAdmin: req.session ? req.session.isAdmin : false
     });
   } catch (error) {
-    console.error('標籤瀏覽錯誤:', error);
+    console.error('Tag page error:', error);
     res.status(500).render('error', {
-      message: '載入標籤文章失敗',
+      message: 'Failed to load tag posts',
       error: error,
       user: req.session ? req.session.username : null,
       isAdmin: req.session ? req.session.isAdmin : false

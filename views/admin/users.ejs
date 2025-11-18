@@ -1,20 +1,20 @@
 <%- include('../partials/header') %>
 
 <div class="container admin-dashboard">
-  <h1 style="margin-bottom: 2rem;">用戶管理</h1>
+  <h1 style="margin-bottom: 2rem;">User Management</h1>
 
   <div class="card">
     <div class="card-body">
       <table class="table">
         <thead>
           <tr>
-            <th>用戶名</th>
-            <th>電子郵件</th>
-            <th>註冊時間</th>
-            <th>登入次數</th>
-            <th>最後登入</th>
-            <th>狀態</th>
-            <th>操作</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Registered At</th>
+            <th>Login Count</th>
+            <th>Last Login</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -22,21 +22,21 @@
             <tr>
               <td><a href="/admin/users/<%= user._id %>"><%= user.username %></a></td>
               <td><%= user.email %></td>
-              <td><%= new Date(user.createdAt).toLocaleDateString('zh-TW') %></td>
+              <td><%= new Date(user.createdAt).toLocaleDateString('en-US') %></td>
               <td><%= user.loginCount %></td>
-              <td><%= user.lastLogin ? new Date(user.lastLogin).toLocaleString('zh-TW') : '從未登入' %></td>
+              <td><%= user.lastLogin ? new Date(user.lastLogin).toLocaleString('en-US') : 'Never' %></td>
               <td>
                 <% if (user.isBanned) { %>
-                  <span style="color: var(--danger-color);">已禁止</span>
+                  <span style="color: var(--danger-color);">Banned</span>
                 <% } else { %>
-                  <span style="color: var(--success-color);">正常</span>
+                  <span style="color: var(--success-color);">Active</span>
                 <% } %>
               </td>
               <td>
                 <% if (user.isBanned) { %>
-                  <button onclick="unbanUser('<%= user._id %>')" class="btn btn-sm btn-success">解除禁止</button>
+                  <button onclick="unbanUser('<%= user._id %>')" class="btn btn-sm btn-success">Unban</button>
                 <% } else { %>
-                  <button onclick="banUser('<%= user._id %>')" class="btn btn-sm btn-danger">禁止</button>
+                  <button onclick="banUser('<%= user._id %>')" class="btn btn-sm btn-danger">Ban</button>
                 <% } %>
               </td>
             </tr>
@@ -46,11 +46,11 @@
     </div>
   </div>
 
-  <!-- 分頁 -->
+  <!-- Pagination -->
   <% if (totalPages > 1) { %>
     <div class="pagination">
       <% if (currentPage > 1) { %>
-        <a href="/admin/users?page=<%= currentPage - 1 %>">上一頁</a>
+        <a href="/admin/users?page=<%= currentPage - 1 %>">Previous</a>
       <% } %>
       
       <% for (let i = 1; i <= totalPages; i++) { %>
@@ -62,7 +62,7 @@
       <% } %>
       
       <% if (currentPage < totalPages) { %>
-        <a href="/admin/users?page=<%= currentPage + 1 %>">下一頁</a>
+        <a href="/admin/users?page=<%= currentPage + 1 %>">Next</a>
       <% } %>
     </div>
   <% } %>
@@ -70,7 +70,7 @@
 
 <script>
 async function banUser(userId) {
-  if (!confirm('確定要禁止此用戶嗎？')) return;
+  if (!confirm('Are you sure you want to ban this user?')) return;
   
   try {
     const response = await fetch(`/admin/users/${userId}/ban`, {
@@ -82,15 +82,15 @@ async function banUser(userId) {
       alert(data.message);
       location.reload();
     } else {
-      alert('操作失敗：' + data.message);
+      alert('Action failed: ' + data.message);
     }
   } catch (error) {
-    alert('操作失敗，請稍後再試');
+    alert('Action failed, please try again later.');
   }
 }
 
 async function unbanUser(userId) {
-  if (!confirm('確定要解除禁止此用戶嗎？')) return;
+  if (!confirm('Unban this user?')) return;
   
   try {
     const response = await fetch(`/admin/users/${userId}/unban`, {
@@ -102,10 +102,10 @@ async function unbanUser(userId) {
       alert(data.message);
       location.reload();
     } else {
-      alert('操作失敗：' + data.message);
+      alert('Action failed: ' + data.message);
     }
   } catch (error) {
-    alert('操作失敗，請稍後再試');
+    alert('Action failed, please try again later.');
   }
 }
 </script>
