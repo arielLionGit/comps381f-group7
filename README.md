@@ -1,5 +1,4 @@
 Group members
---------------
 
 - LIU Chun Nok (SID: 13513144)  
 - WONG Sung Chi (SID: 13514177)  
@@ -302,5 +301,4 @@ Default admin credentials (for local testing) can be found in the configuration 
 - **password:** `123456`  
 
 These values should be changed before deploying to a production environment.
-#   c o m p s 3 8 1 f - g r o u p 7  
- 
+#
