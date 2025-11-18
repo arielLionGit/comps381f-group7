@@ -1,0 +1,91 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <div class="post-detail">
+    <h1 class="post-detail-title"><%= post.title %></h1>
+    
+    <div class="post-detail-meta">
+      <span>👤 <%= post.authorName %></span>
+      <span>📅 <%= new Date(post.createdAt).toLocaleString('zh-TW') %></span>
+      <span>👁️ <%= post.viewCount %> 次瀏覽</span>
+      <% if (post.updatedAt && post.updatedAt.getTime() !== post.createdAt.getTime()) { %>
+        <span>✏️ 最後編輯：<%= new Date(post.updatedAt).toLocaleString('zh-TW') %></span>
+      <% } %>
+    </div>
+
+    <% if (post.tags && post.tags.length > 0) { %>
+      <div class="post-tags mb-3">
+        <% post.tags.forEach(tag => { %>
+          <a href="/tag/<%= tag %>" class="tag">#<%= tag %></a>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (post.images && post.images.length > 0) { %>
+      <div class="post-images">
+        <% post.images.forEach(image => { %>
+          <img src="<%= image.data || image.path %>" alt="<%= image.filename || '文章圖片' %>" class="post-image">
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div class="post-detail-content">
+<%= post.content %>
+    </div>
+
+    <% if (userId && (userId === post.author._id.toString() || isAdmin)) { %>
+      <div class="post-actions">
+        <a href="/post/<%= post._id %>/edit" class="btn btn-secondary">編輯文章</a>
+        <form action="/post/<%= post._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('確定要刪除這篇文章嗎？');">
+          <button type="submit" class="btn btn-danger">刪除文章</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- 留言區 -->
+  <div class="comments-section">
+    <h2 class="comments-title">留言 (<%= comments.length %>)</h2>
+
+    <% if (comments.length > 0) { %>
+      <% comments.forEach(comment => { %>
+        <div class="comment-item">
+          <div class="comment-header">
+            <span class="comment-author"><%= comment.authorName %></span>
+            <span class="comment-date"><%= new Date(comment.createdAt).toLocaleString('zh-TW') %></span>
+          </div>
+          <div class="comment-content"><%= comment.content %></div>
+          <% if (userId && (userId === comment.author._id.toString() || isAdmin)) { %>
+            <form action="/comment/<%= comment._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('確定要刪除這則留言嗎？');">
+              <button type="submit" class="btn btn-sm btn-danger">刪除</button>
+            </form>
+          <% } %>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p style="color: var(--text-light);">目前還沒有留言</p>
+    <% } %>
+
+    <!-- 留言表單 -->
+    <% if (user || isAdmin) { %>
+
+      <div class="comment-form">
+        <h3>發表留言</h3>
+        <form action="/post/<%= post._id %>/comment" method="POST">
+          <div class="form-group">
+            <textarea name="content" class="form-control" placeholder="寫下您的留言..." required maxlength="1000"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">送出留言</button>
+        </form>
+      </div>
+    <% } else { %>
+      <div class="comment-form">
+        <p style="text-align: center; color: var(--text-light);">
+          請 <a href="/login" style="color: var(--primary-color);">登入</a> 後發表留言
+        </p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

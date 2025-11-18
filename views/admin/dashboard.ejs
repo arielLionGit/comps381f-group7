@@ -1,0 +1,134 @@
+<%- include('../partials/header') %>
+
+<div class="container admin-dashboard">
+  <h1 style="margin-bottom: 2rem;">管理員儀表板</h1>
+
+  <!-- 統計卡片 -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">總用戶數</div>
+      <div class="stat-value"><%= stats.totalUsers %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">總文章數</div>
+      <div class="stat-value"><%= stats.totalPosts %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">總留言數</div>
+      <div class="stat-value"><%= stats.totalComments %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">被禁止用戶</div>
+      <div class="stat-value" style="color: var(--danger-color);"><%= stats.bannedUsers %></div>
+    </div>
+  </div>
+
+  <!-- 快速連結 -->
+  <div class="card mb-3">
+    <div class="card-header">管理功能</div>
+    <div class="card-body">
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="/admin/users" class="btn btn-primary">用戶管理</a>
+        <a href="/admin/posts" class="btn btn-primary">文章管理</a>
+        <a href="/admin/comments" class="btn btn-primary">留言管理</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 最近註冊的用戶 -->
+  <div class="card mb-3">
+    <div class="card-header">最近註冊的用戶</div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>用戶名</th>
+            <th>電子郵件</th>
+            <th>註冊時間</th>
+            <th>登入次數</th>
+            <th>狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentUsers.forEach(user => { %>
+            <tr>
+              <td><a href="/admin/users/<%= user._id %>"><%= user.username %></a></td>
+              <td><%= user.email %></td>
+              <td><%= new Date(user.createdAt).toLocaleDateString('zh-TW') %></td>
+              <td><%= user.loginCount %></td>
+              <td>
+                <% if (user.isBanned) { %>
+                  <span style="color: var(--danger-color);">已禁止</span>
+                <% } else { %>
+                  <span style="color: var(--success-color);">正常</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 最活躍的用戶 -->
+  <div class="card mb-3">
+    <div class="card-header">最活躍的用戶</div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>用戶名</th>
+            <th>登入次數</th>
+            <th>最後登入</th>
+            <th>狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% activeUsers.forEach(user => { %>
+            <tr>
+              <td><a href="/admin/users/<%= user._id %>"><%= user.username %></a></td>
+              <td><%= user.loginCount %></td>
+              <td><%= user.lastLogin ? new Date(user.lastLogin).toLocaleString('zh-TW') : '從未登入' %></td>
+              <td>
+                <% if (user.isBanned) { %>
+                  <span style="color: var(--danger-color);">已禁止</span>
+                <% } else { %>
+                  <span style="color: var(--success-color);">正常</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 最近的文章 -->
+  <div class="card">
+    <div class="card-header">最近的文章</div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>標題</th>
+            <th>作者</th>
+            <th>發表時間</th>
+            <th>瀏覽次數</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentPosts.forEach(post => { %>
+            <tr>
+              <td><a href="/post/<%= post._id %>"><%= post.title %></a></td>
+              <td><%= post.authorName %></td>
+              <td><%= new Date(post.createdAt).toLocaleString('zh-TW') %></td>
+              <td><%= post.viewCount %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

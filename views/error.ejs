@@ -1,0 +1,20 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <div style="max-width: 600px; margin: 3rem auto;">
+    <div class="card">
+      <div class="card-body text-center">
+        <h1 style="font-size: 4rem; color: var(--danger-color); margin-bottom: 1rem;">
+          <%= error.status || 500 %>
+        </h1>
+        <h2 style="margin-bottom: 1rem;"><%= message %></h2>
+        <% if (error.stack) { %>
+          <p style="color: var(--text-light); margin-bottom: 2rem;"><%= error.stack %></p>
+        <% } %>
+        <a href="/" class="btn btn-primary">返回首頁</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

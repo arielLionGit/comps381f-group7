@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <div class="search-form">
+    <h1 style="margin-bottom: 1.5rem;">搜尋文章</h1>
+    
+    <form action="/search" method="GET">
+      <div class="form-group">
+        <label for="q" class="form-label">關鍵字</label>
+        <input type="text" id="q" name="q" class="form-control" value="<%= searchQuery %>" placeholder="搜尋標題或內容...">
+      </div>
+
+      <div class="search-filters">
+        <div class="form-group">
+          <label for="startDate" class="form-label">開始日期</label>
+          <input type="date" id="startDate" name="startDate" class="form-control" value="<%= startDate %>">
+        </div>
+
+        <div class="form-group">
+          <label for="endDate" class="form-label">結束日期</label>
+          <input type="date" id="endDate" name="endDate" class="form-control" value="<%= endDate %>">
+        </div>
+
+        <div class="form-group">
+          <label for="tags" class="form-label">標籤</label>
+          <input type="text" id="tags" name="tags" class="form-control" value="<%= tags %>" placeholder="例如：技術,生活（用逗號分隔）">
+        </div>
+      </div>
+
+      <div class="checkbox-group" style="margin-bottom: 1rem;">
+        <input type="checkbox" id="caseSensitive" name="caseSensitive" value="true" <%= caseSensitive ? 'checked' : '' %>>
+        <label for="caseSensitive">區分大小寫</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">搜尋</button>
+      <a href="/search" class="btn btn-outline">清除</a>
+    </form>
+  </div>
+
+  <% if (posts.length > 0) { %>
+    <div class="post-list">
+      <h2 style="margin: 2rem 0 1rem;">搜尋結果（共 <%= posts.length %> 篇）</h2>
+      
+      <% posts.forEach(post => { %>
+        <div class="post-item">
+          <h2 class="post-title">
+            <a href="/post/<%= post._id %>"><%= post.title %></a>
+          </h2>
+          <div class="post-meta">
+            <span>👤 <%= post.authorName %></span>
+            <span>📅 <%= new Date(post.createdAt).toLocaleDateString('zh-TW') %></span>
+            <span>👁️ <%= post.viewCount %> 次瀏覽</span>
+          </div>
+          <div class="post-excerpt">
+            <%= post.content.substring(0, 200) %><%= post.content.length > 200 ? '...' : '' %>
+          </div>
+          <% if (post.tags && post.tags.length > 0) { %>
+            <div class="post-tags">
+              <% post.tags.forEach(tag => { %>
+                <a href="/tag/<%= tag %>" class="tag">#<%= tag %></a>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  <% } else if (searchQuery || startDate || endDate || tags) { %>
+    <div class="card" style="margin-top: 2rem;">
+      <div class="card-body text-center">
+        <p>沒有找到符合條件的文章</p>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>
