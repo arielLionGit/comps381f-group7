@@ -22,7 +22,7 @@ const getValidUserId = async (sessionUserId) => {
       adminUser = new User({
         username: 'admin',
         email: 'admin@example.com',
-        password: 'dummy' // 這個密碼不會被使用，因為管理員通過特殊邏輯登入
+        password: '123456' // 這個密碼不會被使用，因為管理員通過特殊邏輯登入
       });
       await adminUser.save();
     }
