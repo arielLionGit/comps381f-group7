@@ -1,18 +1,45 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const mongoose = require('mongoose');
 const Comment = require('../models/Comment');
 const Post = require('../models/Post');
+const User = require('../models/User');
 const { requireAuth } = require('../middleware/auth');
+
+// 獲取有效的用戶 ID（如果是管理員，則查找或創建管理員用戶記錄）
+const getValidUserId = async (sessionUserId) => {
+  // 如果已經是有效的 ObjectId，直接返回
+  if (mongoose.Types.ObjectId.isValid(sessionUserId) && sessionUserId !== 'admin') {
+    return sessionUserId;
+  }
+  
+  // 如果是管理員，查找或創建管理員用戶
+  if (sessionUserId === 'admin') {
+    let adminUser = await User.findOne({ username: 'admin' });
+    if (!adminUser) {
+      // 如果不存在，創建一個管理員用戶記錄
+      adminUser = new User({
+        username: 'admin',
+        email: 'admin@example.com',
+        password: 'dummy' // 這個密碼不會被使用，因為管理員通過特殊邏輯登入
+      });
+      await adminUser.save();
+    }
+    return adminUser._id;
+  }
+  
+  return sessionUserId;
+};
 
 // 建立留言
 router.post('/post/:postId/comment', requireAuth, [
   body('content')
     .trim()
     .notEmpty()
-    .withMessage('Comment content is required')
+    .withMessage('留言內容不能為空')
     .isLength({ max: 1000 })
-    .withMessage('Comment cannot exceed 1000 characters')
+    .withMessage('留言內容不能超過 1000 個字元')
 ], async (req, res) => {
   const errors = validationResult(req);
   
@@ -27,19 +54,22 @@ router.post('/post/:postId/comment', requireAuth, [
   const { postId } = req.params;
 
   try {
-    // Ensure post exists
+    // 檢查文章是否存在
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ 
         success: false, 
-        message: 'Post not found' 
+        message: '文章不存在' 
       });
     }
 
-    // Create comment
+    // 獲取有效的用戶 ID（處理管理員情況）
+    const validUserId = await getValidUserId(req.session.userId);
+    
+    // 建立留言
     const comment = new Comment({
       content,
-      author: req.session.userId,
+      author: validUserId,
       authorName: req.session.username,
       post: postId
     });
@@ -48,10 +78,10 @@ router.post('/post/:postId/comment', requireAuth, [
 
     res.redirect('/post/' + postId);
   } catch (error) {
-    console.error('Error creating comment:', error);
+    console.error('建立留言錯誤:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Failed to create comment, please try again later' 
+      message: '建立留言失敗，請稍後再試' 
     });
   }
 });
@@ -64,15 +94,18 @@ router.post('/comment/:id/delete', requireAuth, async (req, res) => {
     if (!comment) {
       return res.status(404).json({ 
         success: false, 
-        message: 'Comment not found' 
+        message: '留言不存在' 
       });
     }
 
-    // Ensure owner/admin
-    if (comment.author.toString() !== req.session.userId && !req.session.isAdmin) {
+    // 獲取有效的用戶 ID（處理管理員情況）
+    const validUserId = await getValidUserId(req.session.userId);
+    
+    // 檢查是否為留言作者或管理員
+    if (comment.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
       return res.status(403).json({ 
         success: false, 
-        message: 'You do not have permission to delete this comment' 
+        message: '無權限刪除此留言' 
       });
     }
 
@@ -81,10 +114,10 @@ router.post('/comment/:id/delete', requireAuth, async (req, res) => {
 
     res.redirect('/post/' + postId);
   } catch (error) {
-    console.error('Error deleting comment:', error);
+    console.error('刪除留言錯誤:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'Failed to delete comment' 
+      message: '刪除留言失敗' 
     });
   }
 });
