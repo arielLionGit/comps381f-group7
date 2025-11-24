@@ -262,36 +262,49 @@ GET /api/search?q=keyword&tags=tag1,tag2&startDate=2024-01-01&endDate=2024-12-31
 ### Register User
 
 ```bash
-curl -X POST http://localhost:3000/register \
+curl -X POST  https://comps381f-group7.onrender.com/register 
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=testuser&email=test@example.com&password=123456&confirmPassword=123456"
+  -d "username=testuser&email=test@example.com&password=123456&confirmPassword=123456" -L
 ```
 
 ### Login
 
 ```bash
-curl -X POST http://localhost:3000/login \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=testuser&password=123456" \
-  -c cookies.txt -v
+curl -X POST https://comps381f-group7.onrender.com/login
+  -H "Content-Type: application/x-www-form-urlencoded" 
+  -d "username=testuser&password=123456"
+  -c cookies.txt -L
 ```
 
 ### Create Post via API
 
 ```bash
-curl -X POST http://localhost:3000/api/posts \
-  -H "Content-Type: application/json" \
-  -b cookies.txt \
-  -d '{"title":"Test Post","content":"This is test content","tags":["test"]}'
+curl -X POST https://comps381f-group7.onrender.com/api/posts
+  -H "Content-Type: application/json"
+  -b cookies.txt 
+  -d "{"title":"API測試文章","content":"這是一篇通過API建立的文章","tags":["API","測試"]}"
 ```
 
 ### Get Post List via API
 
 ```bash
-curl -X GET "http://localhost:3000/api/posts?page=1&limit=10"
+curl -X GET "https://comps381f-group7.onrender.com/api/posts?page=1&limit=2" -b cookies.txt
 ```
 
 ---
+
+### Update post via API
+```bash
+curl -X PUT https://comps381f-group7.onrender.com/api/posts/69242794fbeb083086975988
+  -H "Content-Type: application/json"
+  -b cookies.txt
+  -d "{"title":"已更新的標題","content":"已更新的內容"}"
+```
+### Delete post via API
+```bash
+curl -X DELETE https://comps381f-group7.onrender.com/api/posts/69242794fbeb083086975988
+  -b cookies.txt
+```
 
 ## Admin Configuration
 
