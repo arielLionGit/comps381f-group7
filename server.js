@@ -91,6 +91,26 @@ app.use((req, res) => {
 // 錯誤處理中間件
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
+
+  const isJsonSyntaxError = err instanceof SyntaxError && err.type === 'entity.parse.failed';
+  if (isJsonSyntaxError) {
+    const message = 'Invalid JSON payload. Use valid JSON syntax (double quotes) and UTF-8 encoding.';
+
+    if (req.originalUrl.startsWith('/api/')) {
+      return res.status(400).json({
+        success: false,
+        message
+      });
+    }
+
+    return res.status(400).render('error', {
+      message,
+      error: { status: 400, stack: err.message },
+      user: req.session ? req.session.username : null,
+      isAdmin: req.session ? req.session.isAdmin : false
+    });
+  }
+
   res.status(err.status || 500).render('error', {
     message: err.message || 'Server error',
     error: process.env.NODE_ENV === 'development' ? err : {},
