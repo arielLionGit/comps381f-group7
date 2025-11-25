@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 // 檢查用戶是否已登入
 const requireAuth = (req, res, next) => {
   if (!req.session || !req.session.userId) {
@@ -30,9 +32,16 @@ const requireAdmin = (req, res, next) => {
 // 檢查用戶是否被禁止
 const checkBanned = async (req, res, next) => {
   if (req.session && req.session.userId) {
+    const sessionUserId = req.session.userId;
+
+    // Skip banned check for admin session or invalid ObjectId strings
+    if (!mongoose.Types.ObjectId.isValid(sessionUserId)) {
+      return next();
+    }
+
     const User = require('../models/User');
     try {
-      const user = await User.findById(req.session.userId);
+      const user = await User.findById(sessionUserId);
       if (user && user.isBanned) {
         req.session = null; // clear session
         return res.render('error', {
