@@ -20,7 +20,13 @@
             <tr>
               <td><%= comment.content.substring(0, 100) %><%= comment.content.length > 100 ? '...' : '' %></td>
               <td><%= comment.authorName %></td>
-              <td><a href="/post/<%= comment.post._id %>"><%= comment.post.title %></a></td>
+              <td>
+                <% if (comment.post) { %>
+                  <a href="/post/<%= comment.post._id %>"><%= comment.post.title %></a>
+                <% } else { %>
+                  <span class="text-muted">Post deleted</span>
+                <% } %>
+              </td>
               <td><%= new Date(comment.createdAt).toLocaleString('en-US') %></td>
               <td>
                 <form action="/comment/<%= comment._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Delete this comment?');">
