@@ -37,9 +37,9 @@ router.post('/post/:postId/comment', requireAuth, [
   body('content')
     .trim()
     .notEmpty()
-    .withMessage('留言內容不能為空')
+    .withMessage('The message content cannot be empty.')
     .isLength({ max: 1000 })
-    .withMessage('留言內容不能超過 1000 個字元')
+    .withMessage('The message content cannot exceed 1000 characters.')
 ], async (req, res) => {
   const errors = validationResult(req);
   
@@ -59,7 +59,7 @@ router.post('/post/:postId/comment', requireAuth, [
     if (!post) {
       return res.status(404).json({ 
         success: false, 
-        message: '文章不存在' 
+        message: 'post does not exist' 
       });
     }
 
@@ -78,10 +78,10 @@ router.post('/post/:postId/comment', requireAuth, [
 
     res.redirect('/post/' + postId);
   } catch (error) {
-    console.error('建立留言錯誤:', error);
+    console.error('Error creating comment:', error);
     res.status(500).json({ 
       success: false, 
-      message: '建立留言失敗，請稍後再試' 
+      message: 'Failed to create comment, please try again later' 
     });
   }
 });
@@ -94,7 +94,7 @@ router.post('/comment/:id/delete', requireAuth, async (req, res) => {
     if (!comment) {
       return res.status(404).json({ 
         success: false, 
-        message: '留言不存在' 
+        message: 'Comment not found' 
       });
     }
 
@@ -105,7 +105,7 @@ router.post('/comment/:id/delete', requireAuth, async (req, res) => {
     if (comment.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
       return res.status(403).json({ 
         success: false, 
-        message: '無權限刪除此留言' 
+        message: 'No permission to delete this comment' 
       });
     }
 
@@ -114,10 +114,10 @@ router.post('/comment/:id/delete', requireAuth, async (req, res) => {
 
     res.redirect('/post/' + postId);
   } catch (error) {
-    console.error('刪除留言錯誤:', error);
+    console.error('Error delete comment:', error);
     res.status(500).json({ 
       success: false, 
-      message: '刪除留言失敗' 
+      message: 'Failed to delete comment' 
     });
   }
 });
