@@ -23,7 +23,7 @@ const postSchema = new mongoose.Schema({
   images: [{
     filename: String,
     mimetype: String,
-    data: String,  
+    data: String,  // Base64 encoded image data
     uploadedAt: {
       type: Date,
       default: Date.now
@@ -48,16 +48,19 @@ const postSchema = new mongoose.Schema({
   }
 });
 
-
+// Update updatedAt timestamp
 postSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
 
-
+// Increment view count
 postSchema.methods.incrementViewCount = async function() {
+  await this.constructor.updateOne(
+    { _id: this._id },
+    { $inc: { viewCount: 1 } }
+  );
   this.viewCount += 1;
-  await this.save();
 };
 
 module.exports = mongoose.model('Post', postSchema);
