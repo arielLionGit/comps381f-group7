@@ -98,7 +98,9 @@ MongoDB data model files and route handlers:
 1. Visit the homepage or directly visit `/login`
 2. Enter username and password
 3. Click the "Login" button
-4. After successful login, you will be automatically redirected to the homepage
+4. After successful login:
+   - **Admin users** will be automatically redirected to `/admin/dashboard`
+   - **Regular users** will be automatically redirected to the homepage (`/`)
 
 #### Logout Steps:
 1. Click the "Logout" button in the top-right corner of the navigation bar
