@@ -6,10 +6,10 @@
     
     <div class="post-detail-meta">
       <span>👤 <%= post.authorName %></span>
-      <span>📅 <%= new Date(post.createdAt).toLocaleString('en-US') %></span>
+      <span>📅 <%= new Date(post.createdAt).toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) %></span>
       <span>👁️ <%= post.viewCount %> views</span>
       <% if (post.updatedAt && post.updatedAt.getTime() !== post.createdAt.getTime()) { %>
-        <span>✏️ Last edited: <%= new Date(post.updatedAt).toLocaleString('en-US') %></span>
+        <span>✏️ Last edited: <%= new Date(post.updatedAt).toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) %></span>
       <% } %>
     </div>
 
@@ -52,7 +52,7 @@
         <div class="comment-item">
           <div class="comment-header">
             <span class="comment-author"><%= comment.authorName %></span>
-            <span class="comment-date"><%= new Date(comment.createdAt).toLocaleString('en-US') %></span>
+            <span class="comment-date"><%= new Date(comment.createdAt).toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) %></span>
           </div>
           <div class="comment-content"><%= comment.content %></div>
           <% if (userId && (userId === comment.author._id.toString() || isAdmin)) { %>
