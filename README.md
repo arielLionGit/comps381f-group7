@@ -184,22 +184,22 @@ All API endpoints are located under the `/api` path and return JSON-format respo
    - **Path:** `GET /api/posts/:id`
    - **CURL Test Command (CMD):**
    ```cmd
-   curl -X GET "https://comps381f-group7.onrender.com/api/posts/[POST_ID]"
+   curl -X GET "https://comps381f-group7.onrender.com/api/posts/POST_ID"
    ```
    - **Local Test (optional):**
    ```cmd
-   curl -X GET "http://localhost:3000/api/posts/[POST_ID]"
+   curl -X GET "http://localhost:3000/api/posts/POST_ID"
    ```
 
 3. **Get Post Comments**
    - **Path:** `GET /api/posts/:postId/comments`
    - **CURL Test Command (CMD):**
    ```cmd
-   curl -X GET "https://comps381f-group7.onrender.com/api/posts/[POST_ID]/comments"
+   curl -X GET "https://comps381f-group7.onrender.com/api/posts/POST_ID/comments"
    ```
    - **Local Test (optional):**
    ```cmd
-   curl -X GET "http://localhost:3000/api/posts/[POST_ID]/comments"
+   curl -X GET "http://localhost:3000/api/posts/POST_ID/comments"
    ```
 
 4. **Search Posts**
@@ -233,11 +233,11 @@ All API endpoints are located under the `/api` path and return JSON-format respo
    - **Path:** `GET /api/users/:id`
    - **CURL Test Command (CMD):**
    ```cmd
-   curl -X GET "https://comps381f-group7.onrender.com/api/users/[USER_ID]"
+   curl -X GET "https://comps381f-group7.onrender.com/api/users/USER_ID"
    ```
    - **Local Test (optional):**
    ```cmd
-   curl -X GET "http://localhost:3000/api/users/[USER_ID]"
+   curl -X GET "http://localhost:3000/api/users/USER_ID"
    ```
 
 #### Create APIs (POST)
@@ -271,11 +271,11 @@ All API endpoints are located under the `/api` path and return JSON-format respo
    ```
    - **CURL Test Command (CMD):**
    ```cmd
-   curl -X POST "https://comps381f-group7.onrender.com/api/posts/[POST_ID]/comments" -H "Content-Type: application/json" -d "{\"content\":\"This is a test comment\"}"
+   curl -X POST "https://comps381f-group7.onrender.com/api/posts/POST_ID/comments" -H "Content-Type: application/json" -d "{\"content\":\"This is a test comment\"}"
    ```
    - **Local Test (optional):**
    ```cmd
-   curl -X POST "http://localhost:3000/api/posts/[POST_ID]/comments" -H "Content-Type: application/json" -d "{\"content\":\"This is a test comment\"}"
+   curl -X POST "http://localhost:3000/api/posts/POST_ID/comments" -H "Content-Type: application/json" -d "{\"content\":\"This is a test comment\"}"
    ```
 
 #### Update APIs (PUT)
@@ -292,11 +292,11 @@ All API endpoints are located under the `/api` path and return JSON-format respo
    ```
    - **CURL Test Command (CMD):**
    ```cmd
-   curl -X PUT "https://comps381f-group7.onrender.com/api/posts/[POST_ID]" -H "Content-Type: application/json" -d "{\"title\":\"Updated Title\",\"content\":\"Updated Content\",\"tags\":[\"updated\"]}"
+   curl -X PUT "https://comps381f-group7.onrender.com/api/posts/POST_ID" -H "Content-Type: application/json" -d "{\"title\":\"Updated Title\",\"content\":\"Updated Content\",\"tags\":[\"updated\"]}"
    ```
    - **Local Test (optional):**
    ```cmd
-   curl -X PUT "http://localhost:3000/api/posts/[POST_ID]" -H "Content-Type: application/json" -d "{\"title\":\"Updated Title\",\"content\":\"Updated Content\",\"tags\":[\"updated\"]}"
+   curl -X PUT "http://localhost:3000/api/posts/POST_ID" -H "Content-Type: application/json" -d "{\"title\":\"Updated Title\",\"content\":\"Updated Content\",\"tags\":[\"updated\"]}"
    ```
 
 #### Delete APIs (DELETE)
@@ -305,22 +305,22 @@ All API endpoints are located under the `/api` path and return JSON-format respo
    - **Path:** `DELETE /api/comments/:id`
    - **CURL Test Command (CMD):**
    ```cmd
-   curl -X DELETE "https://comps381f-group7.onrender.com/api/comments/[COMMENT_ID]"
+   curl -X DELETE "https://comps381f-group7.onrender.com/api/comments/COMMENT_ID"
    ```
    - **Local Test (optional):**
    ```cmd
-   curl -X DELETE "http://localhost:3000/api/comments/[COMMENT_ID]"
+   curl -X DELETE "http://localhost:3000/api/comments/COMMENT_ID"
    ```
 
 2. **Delete Post**
    - **Path:** `DELETE /api/posts/:id`
    - **CURL Test Command (CMD):**
    ```cmd
-   curl -X DELETE "https://comps381f-group7.onrender.com/api/posts/[POST_ID]"
+   curl -X DELETE "https://comps381f-group7.onrender.com/api/posts/POST_ID"
    ```
    - **Local Test (optional):**
    ```cmd
-   curl -X DELETE "http://localhost:3000/api/posts/[POST_ID]"
+   curl -X DELETE "http://localhost:3000/api/posts/POST_ID"
    ```
 
 **Note:** All RESTful APIs do not require authentication (as per requirements), but some APIs will check permissions (e.g., checking if user is author or admin when updating/deleting).
