@@ -36,7 +36,7 @@ Project dependency list:
 - **cookie-session**: ^2.1.1 - Session management
 - **bcryptjs**: ^3.0.3 - Password encryption
 - **express-validator**: ^7.3.0 - Data validation
-- **body-parser**: ^2.2.0 - Request body parsing
+- **body-parser**: ^2.2.1 - Request body parsing
 - **method-override**: ^3.0.0 - HTTP method override
 - **multer**: ^2.0.2 - File upload handling
 - **dotenv**: ^17.2.3 - Environment variable management
@@ -61,28 +61,17 @@ EJS template files:
 - **admin/**: Admin-related pages (dashboard, users, posts, comments, user-detail)
 
 ### models (folder)
-MongoDB data model files:
+MongoDB data model files and route handlers:
 - **User.js**: User model (username, email, password, isBanned, loginCount, lastLogin)
 - **Post.js**: Post model (title, content, author, images, tags, viewCount)
 - **Comment.js**: Comment model (content, author, post)
-
-### routes (folder)
-Route handler files:
 - **auth.js**: Authentication routes (login, register, logout)
-- **posts.js**: Post routes (CRUD operations)
-- **comments.js**: Comment routes (create, delete)
+- **postRoutes.js**: Post routes (CRUD operations)
+- **commentRoutes.js**: Comment routes (create, delete)
 - **search.js**: Search routes (multi-condition search)
 - **admin.js**: Admin routes (user management, post management, comment management)
 - **api.js**: RESTful API routes (provides JSON-format CRUD services)
 
-### middleware (folder)
-Middleware files:
-- **auth.js**: Authentication middleware (requireAuth, requireGuest, requireAdmin, checkBanned)
-
-### config (folder)
-Configuration files:
-- **database.js**: MongoDB database connection configuration
-- **upload.js**: File upload configuration (Multer)
 
 ## 3. Cloud-based Server URL
 
