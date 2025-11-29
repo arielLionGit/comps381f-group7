@@ -115,27 +115,27 @@ const checkBanned = async (req, res, next) => {
 app.use(checkBanned);
 
 // Authentication routes
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./models/auth');
 app.use('/', authRoutes);
 
 // Post routes
-const postRoutes = require('./routes/posts');
+const postRoutes = require('./models/postRoutes');
 app.use('/', postRoutes);
 
 // Comment routes
-const commentRoutes = require('./routes/comments');
+const commentRoutes = require('./models/commentRoutes');
 app.use('/', commentRoutes);
 
 // Search routes
-const searchRoutes = require('./routes/search');
+const searchRoutes = require('./models/search');
 app.use('/', searchRoutes);
 
 // Admin routes
-const adminRoutes = require('./routes/admin');
+const adminRoutes = require('./models/admin');
 app.use('/admin', adminRoutes);
 
 // API routes
-const apiRoutes = require('./routes/api');
+const apiRoutes = require('./models/api');
 app.use('/api', apiRoutes);
 
 // 404 handler
