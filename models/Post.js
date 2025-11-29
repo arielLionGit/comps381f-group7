@@ -48,13 +48,13 @@ const postSchema = new mongoose.Schema({
   }
 });
 
-// 更新 updatedAt 時間戳
+
 postSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
 
-// 增加瀏覽次數
+
 postSchema.methods.incrementViewCount = async function() {
   this.viewCount += 1;
   await this.save();
