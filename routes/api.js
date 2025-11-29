@@ -6,33 +6,33 @@ const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const User = require('../models/User');
 
-// API 認證中間件
+// API authentication middleware
 const apiAuth = (req, res, next) => {
   if (!req.session || !req.session.userId) {
     return res.status(401).json({ 
       success: false, 
-      message: '未授權，請先登入' 
+      message: 'Unauthorized, please login first' 
     });
   }
   next();
 };
 
-// 獲取有效的用戶 ID（如果是管理員，則查找或創建管理員用戶記錄）
+// Get valid user ID (if admin, find or create admin user record)
 const getValidUserId = async (sessionUserId) => {
-  // 如果已經是有效的 ObjectId，直接返回
+  // If already a valid ObjectId, return directly
   if (mongoose.Types.ObjectId.isValid(sessionUserId) && sessionUserId !== 'admin') {
     return sessionUserId;
   }
   
-  // 如果是管理員，查找或創建管理員用戶
+  // If admin, find or create admin user
   if (sessionUserId === 'admin') {
     let adminUser = await User.findOne({ username: 'admin' });
     if (!adminUser) {
-      // 如果不存在，創建一個管理員用戶記錄
+      // If not exists, create an admin user record
       adminUser = new User({
         username: 'admin',
         email: 'admin@example.com',
-        password: '123456' // 這個密碼不會被使用，因為管理員通過特殊邏輯登入
+        password: '123456' 
       });
       await adminUser.save();
     }
@@ -42,11 +42,30 @@ const getValidUserId = async (sessionUserId) => {
   return sessionUserId;
 };
 
-// ========================================
-// 文章 API
-// ========================================
+// Authentication API
 
-// GET /api/posts - 獲取所有文章
+// POST /api/logout - Logout and clear session
+router.post('/logout', apiAuth, (req, res) => {
+  try {
+    // Clear session
+    req.session = null;
+    
+    res.json({
+      success: true,
+      message: 'Logout successful'
+    });
+  } catch (error) {
+    console.error('API logout error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to logout' 
+    });
+  }
+});
+
+// Post API
+
+// GET /api/posts - Get all posts
 router.get('/posts', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -74,15 +93,15 @@ router.get('/posts', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('API 獲取文章列表錯誤:', error);
+    console.error('API fetch post list error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '獲取文章列表失敗' 
+      message: 'Failed to fetch post list' 
     });
   }
 });
 
-// GET /api/posts/:id - 獲取單篇文章
+// GET /api/posts/:id - Get single post
 router.get('/posts/:id', async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
@@ -92,11 +111,11 @@ router.get('/posts/:id', async (req, res) => {
     if (!post) {
       return res.status(404).json({ 
         success: false, 
-        message: '文章不存在' 
+        message: 'Post not found' 
       });
     }
 
-    // 獲取文章的留言
+    // Get post comments
     const comments = await Comment.find({ post: post._id })
       .sort({ createdAt: -1 })
       .populate('author', 'username')
@@ -110,30 +129,30 @@ router.get('/posts/:id', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('API 獲取文章錯誤:', error);
+    console.error('API fetch post error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '獲取文章失敗' 
+      message: 'Failed to fetch post' 
     });
   }
 });
 
-// POST /api/posts - 建立文章
+// POST /api/posts - Create post
 router.post('/posts', apiAuth, [
   body('title')
     .trim()
     .notEmpty()
-    .withMessage('標題不能為空')
+    .withMessage('Title cannot be empty')
     .isLength({ max: 200 })
-    .withMessage('標題不能超過 200 個字元'),
+    .withMessage('Title cannot exceed 200 characters'),
   body('content')
     .trim()
     .notEmpty()
-    .withMessage('內容不能為空'),
+    .withMessage('Content cannot be empty'),
   body('tags')
     .optional()
     .isArray()
-    .withMessage('標籤必須是陣列')
+    .withMessage('Tags must be an array')
 ], async (req, res) => {
   const errors = validationResult(req);
   
@@ -147,7 +166,7 @@ router.post('/posts', apiAuth, [
   const { title, content, tags } = req.body;
 
   try {
-    // 獲取有效的用戶 ID（處理管理員情況）
+    // Get valid user ID (handle admin case)
     const validUserId = await getValidUserId(req.session.userId);
     
     const post = new Post({
@@ -163,36 +182,36 @@ router.post('/posts', apiAuth, [
 
     res.status(201).json({
       success: true,
-      message: '文章建立成功',
+      message: 'Post created successfully',
       data: { post }
     });
   } catch (error) {
-    console.error('API 建立文章錯誤:', error);
+    console.error('API create post error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '建立文章失敗' 
+      message: 'Failed to create post' 
     });
   }
 });
 
-// PUT /api/posts/:id - 更新文章
+// PUT /api/posts/:id - Update post
 router.put('/posts/:id', apiAuth, [
   body('title')
     .optional()
     .trim()
     .notEmpty()
-    .withMessage('標題不能為空')
+    .withMessage('Title cannot be empty')
     .isLength({ max: 200 })
-    .withMessage('標題不能超過 200 個字元'),
+    .withMessage('Title cannot exceed 200 characters'),
   body('content')
     .optional()
     .trim()
     .notEmpty()
-    .withMessage('內容不能為空'),
+    .withMessage('Content cannot be empty'),
   body('tags')
     .optional()
     .isArray()
-    .withMessage('標籤必須是陣列')
+    .withMessage('Tags must be an array')
 ], async (req, res) => {
   const errors = validationResult(req);
   
@@ -209,18 +228,18 @@ router.put('/posts/:id', apiAuth, [
     if (!post) {
       return res.status(404).json({ 
         success: false, 
-        message: '文章不存在' 
+        message: 'Post not found' 
       });
     }
 
-    // 獲取有效的用戶 ID（處理管理員情況）
+    // Get valid user ID (handle admin case)
     const validUserId = await getValidUserId(req.session.userId);
     
-    // 檢查是否為作者或管理員
+    // Check if user is author or admin
     if (post.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
       return res.status(403).json({ 
         success: false, 
-        message: '無權限編輯此文章' 
+        message: 'No permission to edit this post' 
       });
     }
 
@@ -236,19 +255,19 @@ router.put('/posts/:id', apiAuth, [
 
     res.json({
       success: true,
-      message: '文章更新成功',
+      message: 'Post updated successfully',
       data: { post }
     });
   } catch (error) {
-    console.error('API 更新文章錯誤:', error);
+    console.error('API update post error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '更新文章失敗' 
+      message: 'Failed to update post' 
     });
   }
 });
 
-// DELETE /api/posts/:id - 刪除文章
+// DELETE /api/posts/:id - Delete post
 router.delete('/posts/:id', apiAuth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -256,45 +275,43 @@ router.delete('/posts/:id', apiAuth, async (req, res) => {
     if (!post) {
       return res.status(404).json({ 
         success: false, 
-        message: '文章不存在' 
+        message: 'Post not found' 
       });
     }
 
-    // 獲取有效的用戶 ID（處理管理員情況）
+    // Get valid user ID (handle admin case)
     const validUserId = await getValidUserId(req.session.userId);
     
-    // 檢查是否為作者或管理員
+    // Check if user is author or admin
     if (post.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
       return res.status(403).json({ 
         success: false, 
-        message: '無權限刪除此文章' 
+        message: 'No permission to delete this post' 
       });
     }
 
-    // 刪除文章的留言
+    // Delete post comments
     await Comment.deleteMany({ post: post._id });
 
-    // 刪除文章
+    // Delete post
     await Post.findByIdAndDelete(req.params.id);
 
     res.json({
       success: true,
-      message: '文章刪除成功'
+      message: 'Post deleted successfully'
     });
   } catch (error) {
-    console.error('API 刪除文章錯誤:', error);
+    console.error('API delete post error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '刪除文章失敗' 
+      message: 'Failed to delete post' 
     });
   }
 });
 
-// ========================================
-// 留言 API
-// ========================================
+// Comment API
 
-// GET /api/posts/:postId/comments - 獲取文章的所有留言
+// GET /api/posts/:postId/comments - Get all comments for a post
 router.get('/posts/:postId/comments', async (req, res) => {
   try {
     const comments = await Comment.find({ post: req.params.postId })
@@ -307,22 +324,22 @@ router.get('/posts/:postId/comments', async (req, res) => {
       data: { comments }
     });
   } catch (error) {
-    console.error('API 獲取留言列表錯誤:', error);
+    console.error('API fetch comment list error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '獲取留言列表失敗' 
+      message: 'Failed to fetch comment list' 
     });
   }
 });
 
-// POST /api/posts/:postId/comments - 建立留言
+// POST /api/posts/:postId/comments - Create comment
 router.post('/posts/:postId/comments', apiAuth, [
   body('content')
     .trim()
     .notEmpty()
-    .withMessage('留言內容不能為空')
+    .withMessage('Comment content cannot be empty')
     .isLength({ max: 1000 })
-    .withMessage('留言內容不能超過 1000 個字元')
+    .withMessage('Comment content cannot exceed 1000 characters')
 ], async (req, res) => {
   const errors = validationResult(req);
   
@@ -337,16 +354,16 @@ router.post('/posts/:postId/comments', apiAuth, [
   const { postId } = req.params;
 
   try {
-    // 檢查文章是否存在
+    // Check if post exists
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ 
         success: false, 
-        message: '文章不存在' 
+        message: 'Post not found' 
       });
     }
 
-    // 獲取有效的用戶 ID（處理管理員情況）
+    // Get valid user ID (handle admin case)
     const validUserId = await getValidUserId(req.session.userId);
     
     const comment = new Comment({
@@ -361,19 +378,19 @@ router.post('/posts/:postId/comments', apiAuth, [
 
     res.status(201).json({
       success: true,
-      message: '留言建立成功',
+      message: 'Comment created successfully',
       data: { comment }
     });
   } catch (error) {
-    console.error('API 建立留言錯誤:', error);
+    console.error('API create comment error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '建立留言失敗' 
+      message: 'Failed to create comment' 
     });
   }
 });
 
-// DELETE /api/comments/:id - 刪除留言
+// DELETE /api/comments/:id - Delete comment
 router.delete('/comments/:id', apiAuth, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
@@ -381,18 +398,18 @@ router.delete('/comments/:id', apiAuth, async (req, res) => {
     if (!comment) {
       return res.status(404).json({ 
         success: false, 
-        message: '留言不存在' 
+        message: 'Comment not found' 
       });
     }
 
-    // 獲取有效的用戶 ID（處理管理員情況）
+    // Get valid user ID (handle admin case)
     const validUserId = await getValidUserId(req.session.userId);
     
-    // 檢查是否為留言作者或管理員
+    // Check if user is comment author or admin
     if (comment.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
       return res.status(403).json({ 
         success: false, 
-        message: '無權限刪除此留言' 
+        message: 'No permission to delete this comment' 
       });
     }
 
@@ -400,27 +417,25 @@ router.delete('/comments/:id', apiAuth, async (req, res) => {
 
     res.json({
       success: true,
-      message: '留言刪除成功'
+      message: 'Comment deleted successfully'
     });
   } catch (error) {
-    console.error('API 刪除留言錯誤:', error);
+    console.error('API delete comment error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '刪除留言失敗' 
+      message: 'Failed to delete comment' 
     });
   }
 });
 
-// ========================================
-// 用戶 API
-// ========================================
+// User API
 
-// GET /api/users - 獲取所有用戶（僅管理員）
+// GET /api/users - Get all users (admin only)
 router.get('/users', apiAuth, async (req, res) => {
   if (!req.session.isAdmin) {
     return res.status(403).json({ 
       success: false, 
-      message: '無權限訪問' 
+      message: 'No permission to access' 
     });
   }
 
@@ -435,15 +450,15 @@ router.get('/users', apiAuth, async (req, res) => {
       data: { users }
     });
   } catch (error) {
-    console.error('API 獲取用戶列表錯誤:', error);
+    console.error('API fetch user list error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '獲取用戶列表失敗' 
+      message: 'Failed to fetch user list' 
     });
   }
 });
 
-// GET /api/users/:id - 獲取單個用戶資訊
+// GET /api/users/:id - Get single user information
 router.get('/users/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
@@ -453,7 +468,7 @@ router.get('/users/:id', async (req, res) => {
     if (!user) {
       return res.status(404).json({ 
         success: false, 
-        message: '用戶不存在' 
+        message: 'User not found' 
       });
     }
 
@@ -462,19 +477,19 @@ router.get('/users/:id', async (req, res) => {
       data: { user }
     });
   } catch (error) {
-    console.error('API 獲取用戶錯誤:', error);
+    console.error('API fetch user error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '獲取用戶資訊失敗' 
+      message: 'Failed to fetch user information' 
     });
   }
 });
 
-// ========================================
-// 搜尋 API
-// ========================================
 
-// GET /api/search - 搜尋文章
+// Search API
+
+
+// GET /api/search - Search posts
 router.get('/search', async (req, res) => {
   try {
     const { q: query, tags, startDate, endDate } = req.query;
@@ -524,10 +539,10 @@ router.get('/search', async (req, res) => {
       data: { posts }
     });
   } catch (error) {
-    console.error('API 搜尋錯誤:', error);
+    console.error('API search error:', error);
     res.status(500).json({ 
       success: false, 
-      message: '搜尋失敗' 
+      message: 'Search failed' 
     });
   }
 });
