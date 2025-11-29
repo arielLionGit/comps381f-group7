@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
 
-// 搜尋頁面
+// Search page
 router.get('/search', async (req, res) => {
   try {
     const { 
@@ -13,7 +13,7 @@ router.get('/search', async (req, res) => {
       tags 
     } = req.query;
 
-    // 如果沒有搜尋條件，顯示空搜尋頁面
+    // If no search conditions, display empty search page
     if (!query && !startDate && !endDate && !tags) {
       return res.render('search', {
         posts: [],
@@ -27,10 +27,10 @@ router.get('/search', async (req, res) => {
       });
     }
 
-    // 建立搜尋條件
+    // Build search conditions
     const searchConditions = [];
 
-    // 文字搜尋（標題或內容）
+    // Text search (title or content)
     if (query) {
       const regex = caseSensitive === 'true' 
         ? new RegExp(query) 
@@ -44,7 +44,7 @@ router.get('/search', async (req, res) => {
       });
     }
 
-    // 日期範圍搜尋
+    // Date range search
     if (startDate || endDate) {
       const dateCondition = {};
       
@@ -63,7 +63,7 @@ router.get('/search', async (req, res) => {
       }
     }
 
-    // 標籤搜尋
+    // Tag search
     if (tags) {
       const tagArray = tags.split(',').map(tag => tag.trim().toLowerCase()).filter(tag => tag);
       if (tagArray.length > 0) {
@@ -73,7 +73,7 @@ router.get('/search', async (req, res) => {
       }
     }
 
-    // 執行搜尋
+    // Execute search
     const searchFilter = searchConditions.length > 0 
       ? { $and: searchConditions } 
       : {};
@@ -104,7 +104,7 @@ router.get('/search', async (req, res) => {
   }
 });
 
-// 依標籤瀏覽
+// Browse by tag
 router.get('/tag/:tag', async (req, res) => {
   try {
     const tag = req.params.tag.toLowerCase();
