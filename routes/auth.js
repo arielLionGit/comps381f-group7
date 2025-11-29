@@ -178,7 +178,7 @@ router.post('/login', [
   }
 });
 
-// 登出
+// logout
 router.get('/logout', (req, res) => {
   req.session = null;
   res.redirect('/login');
