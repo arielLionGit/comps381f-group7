@@ -29,7 +29,7 @@ const getValidUserId = async (sessionUserId) => {
       adminUser = new User({
         username: 'admin',
         email: 'admin@example.com',
-        password: '123456' // This password won't be used, as admin logs in through special logic
+        password: '123456' 
       });
       await adminUser.save();
     }
@@ -130,4 +130,5 @@ router.post('/comment/:id/delete', requireAuth, async (req, res) => {
 });
 
 module.exports = router;
+
 
