@@ -1,4 +1,15 @@
-Group members
+# Blog Platform - COMP S381F Group 7
+
+## 1. Project Info
+
+**Project Name:** Blog Platform
+
+**Group Info:**
+- Group No.: Group 7
+- Course Code: COMP S381F
+
+
+## Students' Names & SID: 
 
 - LIU Chun Nok (SID: 13513144)  
 - WONG Sung Chi (SID: 13514177)  
@@ -6,312 +17,330 @@ Group members
 - LIANG Fung Yuen Tony (SID: 13464723)  
 - Lam Tai Cheung (SID: 13519900)  
 
-# Project Name: Blog Platform
-
-## Project Information
-
-- **Project Type:** Web-based blog content management system  
-- **Main Purpose:**  
-  Provide a modern blog platform where registered users can create, read, update, and delete posts, interact through comments, and search articles by various conditions. An admin dashboard is included for managing users and content.
-
-## Project File Introduction
-
-- **`server.js`**  
-  Sets up the Express.js server and connects to MongoDB.  
-  - Configures view engine (EJS), static files, body parsing, cookie-based session, and method override.  
-  - Mounts route modules for authentication, posts, comments, search, admin dashboard, and REST APIs.  
-  - Handles 404 and general error pages.
-
-- **`package.json`**  
-  Lists the main dependencies for this project:
-  - `express` – web framework  
-  - `mongoose` – MongoDB ODM  
-  - `ejs` – template engine for server‑side rendering  
-  - `cookie-session` – session management  
-  - `body-parser` – request body parsing  
-  - `bcryptjs` – password hashing  
-  - `multer` – image upload handling  
-  - `express-validator` – request validation
-
-- **`config/` folder**  
-  - `database.js` – MongoDB connection configuration using Mongoose.  
-  - `upload.js` – Multer configuration for handling image uploads.
-
-- **`models/` folder**  
-  Contains Mongoose models that define the MongoDB schema:
-  - `User.js` – user account, hashed password, login info, admin flag, and banned status.  
-  - `Post.js` – blog posts, including title, content, author reference, tags, view count, and embedded image data.  
-  - `Comment.js` – comments linked to posts and users.
-
-- **`routes/` folder**  
-  - `auth.js` – login, logout, registration, and session handling.  
-  - `posts.js` – HTML CRUD pages for creating, listing, viewing, editing, and deleting blog posts.  
-  - `comments.js` – comment creation and deletion.  
-  - `search.js` – advanced search by keyword, date range, and tags.  
-  - `admin.js` – admin dashboard, user management, and content moderation.  
-  - `api.js` – RESTful JSON APIs (CRUD for posts, comments, and search).
-
-- **`middleware/auth.js`**  
-  Contains authentication middleware such as:
-  - `requireAuth` – ensures that a user is logged in.  
-  - `requireGuest` – ensures that a route is only reachable by non‑logged‑in users.  
-  - Admin checks used in the admin routes.
-
-- **`views/` folder**  
-  Contains EJS templates for the web UI:
-  - `login.ejs`, `register.ejs` – authentication pages.  
-  - `index.ejs` – home page with post listing and pagination.  
-  - `post-create.ejs`, `post-edit.ejs`, `post-detail.ejs` – post CRUD pages.  
-  - `search.ejs`, `tag.ejs` – search results and tag listing.  
-  - `admin/*.ejs` – admin dashboard views for users, posts, and comments.  
-  - `partials/header.ejs`, `partials/footer.ejs` – shared layout components.  
-  - `error.ejs` – error display page.
-
-- **`public/` folder**  
-  - `css/style.css` – global styles, card layout, responsive design, and image styling.  
-
-- **Documentation Files**  
-  - `README.md` – main Chinese README.  
-  - `README copy 2.md` – this English README (for submission).  
-  - `API_DOCUMENTATION.md` – detailed API documentation for all REST endpoints.  
-  - `API_TEST_COMMANDS.md` – cURL examples for manual testing.  
-  - `CONFIGURATION.md`, `QUICK_START.md` – setup and configuration guides.
-
----
-
-## Technology Stack
-
-- **Backend framework:** Express.js  
-- **Database:** MongoDB with Mongoose  
-- **View engine:** EJS templates (server‑side rendering)  
-- **Authentication:** `bcryptjs` + `cookie-session`  
-- **File upload:** Multer (images stored as Base64 in MongoDB)  
-- **Validation:** `express-validator`  
-- **CSS:** Custom responsive layout in `public/css/style.css`
-
----
-
-## User Flow
-
-### Login / Logout Pages
+## 2. Project File Introduction
+
+### server.js
+Main server file that provides the following functionalities:
+- Express.js server configuration
+- MongoDB database connection
+- Cookie-session authentication mechanism
+- Route configuration (authentication, posts, comments, search, admin, API)
+- Error handling middleware
+- Static file serving
+
+### package.json
+Project dependency list:
+- **express**: ^5.1.0 - Web framework
+- **mongoose**: ^8.19.3 - MongoDB ODM
+- **ejs**: ^3.1.10 - Template engine
+- **cookie-session**: ^2.1.1 - Session management
+- **bcryptjs**: ^3.0.3 - Password encryption
+- **express-validator**: ^7.3.0 - Data validation
+- **body-parser**: ^2.2.0 - Request body parsing
+- **method-override**: ^3.0.0 - HTTP method override
+- **multer**: ^2.0.2 - File upload handling
+- **dotenv**: ^17.2.3 - Environment variable management
+
+### public (folder)
+Static resource files:
+- **css/style.css**: Website stylesheet with responsive design and modern UI styles
+
+### views (folder)
+EJS template files:
+- **index.ejs**: Homepage displaying all posts list (paginated)
+- **login.ejs**: Login page
+- **register.ejs**: Registration page
+- **post-create.ejs**: Create post page
+- **post-detail.ejs**: Post detail page (includes comment functionality)
+- **post-edit.ejs**: Edit post page
+- **search.ejs**: Search page (supports multiple query conditions)
+- **tag.ejs**: Tag browsing page
+- **error.ejs**: Error page
+- **partials/header.ejs**: Header template (includes navigation bar and logout button)
+- **partials/footer.ejs**: Footer template
+- **admin/**: Admin-related pages (dashboard, users, posts, comments, user-detail)
+
+### models (folder)
+MongoDB data model files:
+- **User.js**: User model (username, email, password, isBanned, loginCount, lastLogin)
+- **Post.js**: Post model (title, content, author, images, tags, viewCount)
+- **Comment.js**: Comment model (content, author, post)
+
+### routes (folder)
+Route handler files:
+- **auth.js**: Authentication routes (login, register, logout)
+- **posts.js**: Post routes (CRUD operations)
+- **comments.js**: Comment routes (create, delete)
+- **search.js**: Search routes (multi-condition search)
+- **admin.js**: Admin routes (user management, post management, comment management)
+- **api.js**: RESTful API routes (provides JSON-format CRUD services)
+
+### middleware (folder)
+Middleware files:
+- **auth.js**: Authentication middleware (requireAuth, requireGuest, requireAdmin, checkBanned)
+
+### config (folder)
+Configuration files:
+- **database.js**: MongoDB database connection configuration
+- **upload.js**: File upload configuration (Multer)
+
+## 3. Cloud-based Server URL
+
+**Cloud Test Server URL:** https://comps381f-group7.onrender.com/
+
+**Local Test Server URL:** http://localhost:3000
+
+## 4. Operation Guides
+
+### 4.1 Login/Logout Pages
+
+#### Valid Login Information:
+- **Admin Account:**
+  - Username: `admin`
+  - Password: `123456`
+
+- **Regular Users:**
+  - Can create new accounts through the registration page (`/register`)
+  - Or use existing registered accounts to log in
+
+#### Login Steps:
+1. Visit the homepage or directly visit `/login`
+2. Enter username and password
+3. Click the "Login" button
+4. After successful login, you will be automatically redirected to the homepage
+
+#### Logout Steps:
+1. Click the "Logout" button in the top-right corner of the navigation bar
+2. Or directly visit `/logout`
+3. After logout, you will be automatically redirected to the login page
+
+**Note:** Only logged-in users can access CRUD function pages. Non-logged-in users will be redirected to the login page.
+
+### 4.2 CRUD Web Pages
+
+#### Create Function:
+- **Location:** "Create Post" button in the navigation bar (visible only to logged-in users)
+- **Path:** `/create`
+- **Features:**
+  - Fill in post title (required, max 200 characters)
+  - Fill in post content (required)
+  - Upload images (optional, max 5 images, 5MB per image)
+  - Add tags (optional, comma-separated)
+  - Click "Publish" button to publish the post
+
+#### Read Function:
+- **Homepage Browsing:**
+  - Path: `/`
+  - Display all posts list (paginated, 10 posts per page)
+  - Click post title to view details
+
+- **Post Details:**
+  - Path: `/post/:id`
+  - Display complete post content, author, publish time, view count, tags
+  - Display all comments
+
+- **Search Function:**
+  - Path: `/search`
+  - Supports multiple query conditions:
+    - **Keyword Search:** Search in title or content (case-sensitive option available)
+    - **Date Range:** Specify start date and end date
+    - **Tag Search:** Enter tags (comma-separated)
+  - Can combine multiple conditions for search
+
+- **Tag Browsing:**
+  - Path: `/tag/:tag`
+  - Click tags in posts to browse all posts under that tag
+
+#### Update Function:
+- **Location:** "Edit Post" button on post detail page (visible only to author or admin)
+- **Path:** `/post/:id/edit`
+- **Features:**
+  - Modify post title and content
+  - Delete existing images (check "Remove")
+  - Add new images
+  - Modify tags
+  - Click "Update Post" button to save changes
+
+#### Delete Function:
+- **Location:** "Delete Post" button on post detail page (visible only to author or admin)
+- **Path:** `/post/:id/delete` (POST)
+- **Features:**
+  - Click "Delete Post" button
+  - After confirmation, the post and all its comments will be permanently deleted
+  - Automatically redirect to homepage after deletion
+
+**Note:** All CRUD pages include a logout button (located in the top-right corner of the navigation bar).
+
+### 4.3 RESTful CRUD Services
+
+All API endpoints are located under the `/api` path and return JSON-format responses.
+
+#### Read APIs (GET)
+
+1. **Get All Posts**
+   - **Path:** `GET /api/posts`
+   - **Query Parameters:**
+     - `page` (optional): Page number, default is 1
+     - `limit` (optional): Items per page, default is 10
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X GET "https://comps381f-group7.onrender.com/api/posts?page=1&limit=10"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X GET "http://localhost:3000/api/posts?page=1&limit=10"
+   ```
+
+2. **Get Single Post**
+   - **Path:** `GET /api/posts/:id`
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X GET "https://comps381f-group7.onrender.com/api/posts/[POST_ID]"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X GET "http://localhost:3000/api/posts/[POST_ID]"
+   ```
+
+3. **Get Post Comments**
+   - **Path:** `GET /api/posts/:postId/comments`
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X GET "https://comps381f-group7.onrender.com/api/posts/[POST_ID]/comments"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X GET "http://localhost:3000/api/posts/[POST_ID]/comments"
+   ```
+
+4. **Search Posts**
+   - **Path:** `GET /api/search`
+   - **Query Parameters:**
+     - `q` (optional): Keyword (search in title or content)
+     - `tags` (optional): Tags (comma-separated)
+     - `startDate` (optional): Start date (YYYY-MM-DD)
+     - `endDate` (optional): End date (YYYY-MM-DD)
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X GET "https://comps381f-group7.onrender.com/api/search?q=API&tags=api&startDate=2025-11-27&endDate=2025-11-29"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X GET "http://localhost:3000/api/search?q=API&tags=api&startDate=2025-11-27&endDate=2025-11-29"
+   ```
+
+5. **Get All Users**
+   - **Path:** `GET /api/users`
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X GET "https://comps381f-group7.onrender.com/api/users"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X GET "http://localhost:3000/api/users"
+   ```
+
+6. **Get Single User Information**
+   - **Path:** `GET /api/users/:id`
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X GET "https://comps381f-group7.onrender.com/api/users/[USER_ID]"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X GET "http://localhost:3000/api/users/[USER_ID]"
+   ```
+
+#### Create APIs (POST)
+
+1. **Create Post**
+   - **Path:** `POST /api/posts`
+   - **Request Body (JSON):**
+   ```json
+   {
+     "title": "Post Title",
+     "content": "Post Content",
+     "tags": ["tag1", "tag2"]
+   }
+   ```
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X POST "https://comps381f-group7.onrender.com/api/posts" -H "Content-Type: application/json" -d "{\"title\":\"Test Post\",\"content\":\"This is a test post\",\"tags\":[\"test\",\"demo\"]}"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X POST "http://localhost:3000/api/posts" -H "Content-Type: application/json" -d "{\"title\":\"Test Post\",\"content\":\"This is a test post\",\"tags\":[\"test\",\"demo\"]}"
+   ```
+
+2. **Create Comment**
+   - **Path:** `POST /api/posts/:postId/comments`
+   - **Request Body (JSON):**
+   ```json
+   {
+     "content": "Comment Content"
+   }
+   ```
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X POST "https://comps381f-group7.onrender.com/api/posts/[POST_ID]/comments" -H "Content-Type: application/json" -d "{\"content\":\"This is a test comment\"}"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X POST "http://localhost:3000/api/posts/[POST_ID]/comments" -H "Content-Type: application/json" -d "{\"content\":\"This is a test comment\"}"
+   ```
+
+#### Update APIs (PUT)
+
+1. **Update Post**
+   - **Path:** `PUT /api/posts/:id`
+   - **Request Body (JSON, all fields optional):**
+   ```json
+   {
+     "title": "Updated Title",
+     "content": "Updated Content",
+     "tags": ["updated", "tags"]
+   }
+   ```
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X PUT "https://comps381f-group7.onrender.com/api/posts/[POST_ID]" -H "Content-Type: application/json" -d "{\"title\":\"Updated Title\",\"content\":\"Updated Content\",\"tags\":[\"updated\"]}"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X PUT "http://localhost:3000/api/posts/[POST_ID]" -H "Content-Type: application/json" -d "{\"title\":\"Updated Title\",\"content\":\"Updated Content\",\"tags\":[\"updated\"]}"
+   ```
+
+#### Delete APIs (DELETE)
+
+1. **Delete Comment**
+   - **Path:** `DELETE /api/comments/:id`
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X DELETE "https://comps381f-group7.onrender.com/api/comments/[COMMENT_ID]"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X DELETE "http://localhost:3000/api/comments/[COMMENT_ID]"
+   ```
+
+2. **Delete Post**
+   - **Path:** `DELETE /api/posts/:id`
+   - **CURL Test Command (CMD):**
+   ```cmd
+   curl -X DELETE "https://comps381f-group7.onrender.com/api/posts/[POST_ID]"
+   ```
+   - **Local Test (optional):**
+   ```cmd
+   curl -X DELETE "http://localhost:3000/api/posts/[POST_ID]"
+   ```
+
+**Note:** All RESTful APIs do not require authentication (as per requirements), but some APIs will check permissions (e.g., checking if user is author or admin when updating/deleting).
+
+### 4.4 Other Features
+
+- **Admin Features:** After logging in with admin account, you can access `/admin/dashboard` for user management, post management, and comment management
+- **Comment Feature:** Logged-in users can post comments on post detail pages
+- **Image Upload:** Supports uploading images to posts (stored as Base64 encoding)
+- **Tag System:** Posts can have multiple tags, supports browsing by tags
+- **Pagination Feature:** Homepage post list supports pagination
 
-- Visit `/login` to log in with username and password.  
-- Visit `/register` to create a new account (unique email check).  
-- Click the **Logout** button or go to `/logout` to end the session.  
-- After login, a cookie‑session is created so the user can access protected CRUD pages.
-
-### Basic Blog Operations (CRUD Web Pages)
-
-1. **Register**
-   - Route: `/register`  
-   - Fill in username, email, password, and confirmation.  
-   - On success, the user is logged in automatically.
-
-2. **Login**
-   - Route: `/login`  
-   - Enter username and password.  
-   - On success, the user is redirected to the home page.
-
-3. **Create Post**
-   - Route: `/posts/create` (requires login).  
-   - Fill in title and content.  
-   - Optionally upload up to 5 images and add tags separated by commas.  
-   - On success, the user is redirected to the new post detail page.
-
-4. **Read Post**
-   - Home page (`/`) lists recent posts with excerpt, tags, and view count.  
-   - Clicking a title opens `/post/:id`, showing full content, images, tags, views, and comments.
-
-5. **Update Post**
-   - On the post detail page, the author (or admin) can click **Edit**.  
-   - Route: `/posts/:id/edit` (requires login and permission).  
-   - Users may modify title, content, tags, and images.  
-
-6. **Delete Post**
-   - On the post detail or admin list, the author or admin can delete a post via a form submission to `/posts/:id/delete`.  
-   - After deletion, the user is redirected to the home page.
-
-### Comments
-
-- Logged‑in users can add comments under each post.  
-- Comment authors and admins can delete comments.  
-- Comments are displayed with author name and timestamp.
-
-### Search
-
-- Route: `/search`  
-- Users can search posts by:
-  - Keyword (title and content)  
-  - Date range  
-  - One or more tags  
-- Multiple filters can be combined in one search.
-
-### Admin Operations
-
-1. **Admin Login**
-   - Admin uses predefined credentials (see configuration) on the same `/login` page.  
-   - On successful admin login, the user is redirected to `/admin/dashboard`.
-
-2. **Admin Dashboard**
-   - Route: `/admin/dashboard`  
-   - Displays statistics such as total users, posts, and comments.
-
-3. **User Management**
-   - View list of all users.  
-   - Ban or unban users.  
-   - View detailed information and activity records.
-
-4. **Content Management**
-   - Manage all posts and comments.  
-   - Remove inappropriate content.  
-
----
-
-## RESTful CRUD Services
-
-All REST APIs live under the `/api` prefix and return JSON responses.  
-Authenticated endpoints require the user to be logged in (session cookie).
-
-### Authentication
-
-- Before calling protected endpoints, log in via the web UI or the cURL examples below to obtain a session cookie.  
-- The cookie is then sent with subsequent `curl` requests using `-b cookies.txt`.
-
-### Post APIs
-
-**Get all posts**
-
-```bash
-GET /api/posts?page=1&limit=10
-```
-
-**Get a single post**
-
-```bash
-GET /api/posts/:id
-```
-
-**Create a post** (requires login)
-
-```bash
-POST /api/posts
-Content-Type: application/json
-
-{
-  "title": "Post title",
-  "content": "Post content",
-  "tags": ["tag1", "tag2"]
-}
-```
-
-**Update a post** (requires login; author or admin only)
-
-```bash
-PUT /api/posts/:id
-Content-Type: application/json
-
-{
-  "title": "Updated title",
-  "content": "Updated content"
-}
-```
-
-**Delete a post** (requires login; author or admin only)
-
-```bash
-DELETE /api/posts/:id
-```
-
-### Comment APIs
-
-**Get all comments of a post**
-
-```bash
-GET /api/posts/:postId/comments
-```
-
-**Create a comment** (requires login)
-
-```bash
-POST /api/posts/:postId/comments
-Content-Type: application/json
-
-{
-  "content": "Comment content"
-}
-```
-
-**Delete a comment** (requires login; comment author or admin)
-
-```bash
-DELETE /api/comments/:id
-```
-
-### Search API
-
-**Search posts**
-
-```bash
-GET /api/search?q=keyword&tags=tag1,tag2&startDate=2024-01-01&endDate=2024-12-31
-```
-
----
-
-## cURL Test Examples
-
-### Register User
-
-```bash
-curl -X POST  https://comps381f-group7.onrender.com/register 
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=testuser&email=test@example.com&password=123456&confirmPassword=123456" -L
-```
-
-### Login
-
-```bash
-curl -X POST https://comps381f-group7.onrender.com/login
-  -H "Content-Type: application/x-www-form-urlencoded" 
-  -d "username=testuser&password=123456"
-  -c cookies.txt -L
-```
-
-### Create Post via API
-
-```bash
-curl -X POST https://comps381f-group7.onrender.com/api/posts
-  -H "Content-Type: application/json"
-  -b cookies.txt 
-  -d "{"title":"API測試文章","content":"這是一篇通過API建立的文章","tags":["API","測試"]}"
-```
-
-### Get Post List via API
-
-```bash
-curl -X GET "https://comps381f-group7.onrender.com/api/posts?page=1&limit=2" -b cookies.txt
-```
-
----
-
-### Update post via API
-```bash
-curl -X PUT https://comps381f-group7.onrender.com/api/posts/69242794fbeb083086975988
-  -H "Content-Type: application/json"
-  -b cookies.txt
-  -d "{"title":"已更新的標題","content":"已更新的內容"}"
-```
-### Delete post via API
-```bash
-curl -X DELETE https://comps381f-group7.onrender.com/api/posts/69242794fbeb083086975988
-  -b cookies.txt
-```
-
-## Admin Configuration
-
-Default admin credentials (for local testing) can be found in the configuration or `.env` file, for example:
-
-- **username:** `admin`  
-- **password:** `123456`  
-
-These values should be changed before deploying to a production environment.
-#
