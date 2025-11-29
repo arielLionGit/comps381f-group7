@@ -23,7 +23,7 @@ const postSchema = new mongoose.Schema({
   images: [{
     filename: String,
     mimetype: String,
-    data: String,  // Base64 編碼的圖片數據
+    data: String,  
     uploadedAt: {
       type: Date,
       default: Date.now
