@@ -17,7 +17,7 @@
         </tr>
         <tr>
           <th>Registered At</th>
-          <td><%= new Date(targetUser.createdAt).toLocaleString('en-US') %></td>
+          <td><%= new Date(targetUser.createdAt).toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) %></td>
         </tr>
         <tr>
           <th>Login Count</th>
@@ -25,7 +25,7 @@
         </tr>
         <tr>
           <th>Last Login</th>
-          <td><%= targetUser.lastLogin ? new Date(targetUser.lastLogin).toLocaleString('en-US') : 'Never' %></td>
+          <td><%= targetUser.lastLogin ? new Date(targetUser.lastLogin).toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) : 'Never' %></td>
         </tr>
         <tr>
           <th>Status</th>
@@ -66,7 +66,7 @@
             <% posts.forEach(post => { %>
               <tr>
                 <td><a href="/post/<%= post._id %>"><%= post.title %></a></td>
-                <td><%= new Date(post.createdAt).toLocaleString('en-US') %></td>
+                <td><%= new Date(post.createdAt).toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) %></td>
                 <td><%= post.viewCount %></td>
               </tr>
             <% }) %>
@@ -95,7 +95,7 @@
               <tr>
                 <td><%= comment.content.substring(0, 50) %><%= comment.content.length > 50 ? '...' : '' %></td>
                 <td><a href="/post/<%= comment.post._id %>"><%= comment.post.title %></a></td>
-                <td><%= new Date(comment.createdAt).toLocaleString('en-US') %></td>
+                <td><%= new Date(comment.createdAt).toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) %></td>
               </tr>
             <% }) %>
           </tbody>
