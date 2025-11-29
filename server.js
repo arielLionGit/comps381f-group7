@@ -4,24 +4,59 @@ const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const methodOverride = require('method-override');
 const path = require('path');
-const { connectDB } = require('./config/database');
-
+const mongoose = require('mongoose');
+const User = require('./models/User');
 
 const SERVER_CONFIG = {
-  PORT: 3000,  // 伺服器端口
-  SESSION_SECRET: 'your-secret-key-change-in-production'  // Session 密鑰
+  PORT: 3000,  // Server port
+  SESSION_SECRET: 'your-secret-key-change-in-production'  // Session secret key
 };
 
 const PORT = SERVER_CONFIG.PORT || process.env.PORT || 3000;
 const SESSION_SECRET = SERVER_CONFIG.SESSION_SECRET || process.env.SESSION_SECRET || 'your-secret-key';
 
-// 初始化 Express 應用
+// Database connection configuration
+const DB_CONFIG = {
+  options: {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+};
+
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://Group7:123@cluster0.lctwnkf.mongodb.net/?appName=Cluster0';
+
+// Database connection function
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI, DB_CONFIG.options);
+    console.log('✓ MongoDB connection successful');
+    console.log(`✓ Database address: ${MONGODB_URI}`);
+  } catch (error) {
+    console.error('✗ MongoDB connection failed:', error.message);
+    console.error('Please check the following:');
+    console.error('1. Is MongoDB service running?');
+    console.error('2. Is the connection string correct?');
+    console.error('3. Is the network connection normal?');
+    process.exit(1);
+  }
+};
+
+// Listen to database events
+mongoose.connection.on('disconnected', () => {
+  console.log('⚠ MongoDB connection disconnected');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('✗ MongoDB error:', err);
+});
+
+// Initialize Express app
 const app = express();
 
-// 連接資料庫
+// Connect to database
 connectDB();
 
-// 設定視圖引擎
+// Set view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -29,20 +64,20 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Method override (支援 PUT 和 DELETE)
+// Method override (support PUT and DELETE)
 app.use(methodOverride('_method'));
 
-// 靜態檔案
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session 設定
+// Session configuration
 app.use(cookieSession({
   name: 'session',
   keys: [SESSION_SECRET],
-  maxAge: 24 * 60 * 60 * 1000 // 24 小時
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
-// 全域變數中間件
+// Global variables middleware
 app.use((req, res, next) => {
   res.locals.user = req.session ? req.session.username : null;
   res.locals.userId = req.session ? req.session.userId : null;
@@ -50,35 +85,60 @@ app.use((req, res, next) => {
   next();
 });
 
-// 檢查用戶禁止狀態
-const { checkBanned } = require('./middleware/auth');
+// Check user banned status middleware
+const checkBanned = async (req, res, next) => {
+  if (req.session && req.session.userId) {
+    const sessionUserId = req.session.userId;
+
+    // Skip banned check for admin session or invalid ObjectId strings
+    if (!mongoose.Types.ObjectId.isValid(sessionUserId)) {
+      return next();
+    }
+
+    try {
+      const user = await User.findById(sessionUserId);
+      if (user && user.isBanned) {
+        req.session = null; // clear session
+        return res.render('error', {
+          message: 'Account banned',
+          error: { status: 403, stack: 'Your account has been banned. Please contact the administrator.' },
+          user: null,
+          isAdmin: false
+        });
+      }
+    } catch (error) {
+      console.error('Check banned status error:', error);
+    }
+  }
+  next();
+};
 app.use(checkBanned);
 
-// 認證路由
+// Authentication routes
 const authRoutes = require('./routes/auth');
 app.use('/', authRoutes);
 
-// 文章路由
+// Post routes
 const postRoutes = require('./routes/posts');
 app.use('/', postRoutes);
 
-// 留言路由
+// Comment routes
 const commentRoutes = require('./routes/comments');
 app.use('/', commentRoutes);
 
-// 搜尋路由
+// Search routes
 const searchRoutes = require('./routes/search');
 app.use('/', searchRoutes);
 
-// 管理員路由
+// Admin routes
 const adminRoutes = require('./routes/admin');
 app.use('/admin', adminRoutes);
 
-// API 路由
+// API routes
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
 
-// 404 處理
+// 404 handler
 app.use((req, res) => {
   res.status(404).render('error', {
     message: 'Page not found',
@@ -88,7 +148,7 @@ app.use((req, res) => {
   });
 });
 
-// 錯誤處理中間件
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
 
