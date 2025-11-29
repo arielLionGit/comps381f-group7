@@ -44,11 +44,13 @@ const getValidUserId = async (sessionUserId) => {
 
 // Authentication API
 
-// POST /api/logout - Logout and clear session
-router.post('/logout', apiAuth, (req, res) => {
+// POST /api/logout - Logout and clear session (no authentication required)
+router.post('/logout', (req, res) => {
   try {
-    // Clear session
-    req.session = null;
+    // Clear session if exists
+    if (req.session) {
+      req.session = null;
+    }
     
     res.json({
       success: true,
@@ -137,8 +139,8 @@ router.get('/posts/:id', async (req, res) => {
   }
 });
 
-// POST /api/posts - Create post
-router.post('/posts', apiAuth, [
+// POST /api/posts - Create post (no authentication required)
+router.post('/posts', [
   body('title')
     .trim()
     .notEmpty()
@@ -166,14 +168,32 @@ router.post('/posts', apiAuth, [
   const { title, content, tags } = req.body;
 
   try {
-    // Get valid user ID (handle admin case)
-    const validUserId = await getValidUserId(req.session.userId);
+    // Handle user ID - use session if available, otherwise use anonymous user
+    let validUserId;
+    let authorName = 'Anonymous';
+    
+    if (req.session && req.session.userId) {
+      validUserId = await getValidUserId(req.session.userId);
+      authorName = req.session.username || 'Anonymous';
+    } else {
+      // Find or create anonymous user for API posts
+      let anonymousUser = await User.findOne({ username: 'anonymous' });
+      if (!anonymousUser) {
+        anonymousUser = new User({
+          username: 'anonymous',
+          email: 'anonymous@example.com',
+          password: 'anonymous'
+        });
+        await anonymousUser.save();
+      }
+      validUserId = anonymousUser._id;
+    }
     
     const post = new Post({
       title,
       content,
       author: validUserId,
-      authorName: req.session.username,
+      authorName: authorName,
       tags: tags || []
     });
 
@@ -194,8 +214,8 @@ router.post('/posts', apiAuth, [
   }
 });
 
-// PUT /api/posts/:id - Update post
-router.put('/posts/:id', apiAuth, [
+// PUT /api/posts/:id - Update post (no authentication required)
+router.put('/posts/:id', [
   body('title')
     .optional()
     .trim()
@@ -232,15 +252,17 @@ router.put('/posts/:id', apiAuth, [
       });
     }
 
-    // Get valid user ID (handle admin case)
-    const validUserId = await getValidUserId(req.session.userId);
-    
-    // Check if user is author or admin
-    if (post.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'No permission to edit this post' 
-      });
+    // If user is logged in, check permissions; otherwise allow update
+    if (req.session && req.session.userId) {
+      const validUserId = await getValidUserId(req.session.userId);
+      
+      // Check if user is author or admin
+      if (post.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
+        return res.status(403).json({ 
+          success: false, 
+          message: 'No permission to edit this post' 
+        });
+      }
     }
 
     const { title, content, tags } = req.body;
@@ -267,8 +289,8 @@ router.put('/posts/:id', apiAuth, [
   }
 });
 
-// DELETE /api/posts/:id - Delete post
-router.delete('/posts/:id', apiAuth, async (req, res) => {
+// DELETE /api/posts/:id - Delete post (no authentication required)
+router.delete('/posts/:id', async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     
@@ -279,15 +301,17 @@ router.delete('/posts/:id', apiAuth, async (req, res) => {
       });
     }
 
-    // Get valid user ID (handle admin case)
-    const validUserId = await getValidUserId(req.session.userId);
-    
-    // Check if user is author or admin
-    if (post.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'No permission to delete this post' 
-      });
+    // If user is logged in, check permissions; otherwise allow delete
+    if (req.session && req.session.userId) {
+      const validUserId = await getValidUserId(req.session.userId);
+      
+      // Check if user is author or admin
+      if (post.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
+        return res.status(403).json({ 
+          success: false, 
+          message: 'No permission to delete this post' 
+        });
+      }
     }
 
     // Delete post comments
@@ -332,8 +356,8 @@ router.get('/posts/:postId/comments', async (req, res) => {
   }
 });
 
-// POST /api/posts/:postId/comments - Create comment
-router.post('/posts/:postId/comments', apiAuth, [
+// POST /api/posts/:postId/comments - Create comment (no authentication required)
+router.post('/posts/:postId/comments', [
   body('content')
     .trim()
     .notEmpty()
@@ -363,13 +387,31 @@ router.post('/posts/:postId/comments', apiAuth, [
       });
     }
 
-    // Get valid user ID (handle admin case)
-    const validUserId = await getValidUserId(req.session.userId);
+    // Handle user ID - use session if available, otherwise use anonymous user
+    let validUserId;
+    let authorName = 'Anonymous';
+    
+    if (req.session && req.session.userId) {
+      validUserId = await getValidUserId(req.session.userId);
+      authorName = req.session.username || 'Anonymous';
+    } else {
+      // Find or create anonymous user for API comments
+      let anonymousUser = await User.findOne({ username: 'anonymous' });
+      if (!anonymousUser) {
+        anonymousUser = new User({
+          username: 'anonymous',
+          email: 'anonymous@example.com',
+          password: 'anonymous'
+        });
+        await anonymousUser.save();
+      }
+      validUserId = anonymousUser._id;
+    }
     
     const comment = new Comment({
       content,
       author: validUserId,
-      authorName: req.session.username,
+      authorName: authorName,
       post: postId
     });
 
@@ -390,8 +432,8 @@ router.post('/posts/:postId/comments', apiAuth, [
   }
 });
 
-// DELETE /api/comments/:id - Delete comment
-router.delete('/comments/:id', apiAuth, async (req, res) => {
+// DELETE /api/comments/:id - Delete comment (no authentication required)
+router.delete('/comments/:id', async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.id);
     
@@ -402,15 +444,17 @@ router.delete('/comments/:id', apiAuth, async (req, res) => {
       });
     }
 
-    // Get valid user ID (handle admin case)
-    const validUserId = await getValidUserId(req.session.userId);
-    
-    // Check if user is comment author or admin
-    if (comment.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'No permission to delete this comment' 
-      });
+    // If user is logged in, check permissions; otherwise allow delete
+    if (req.session && req.session.userId) {
+      const validUserId = await getValidUserId(req.session.userId);
+      
+      // Check if user is comment author or admin
+      if (comment.author.toString() !== validUserId.toString() && !req.session.isAdmin) {
+        return res.status(403).json({ 
+          success: false, 
+          message: 'No permission to delete this comment' 
+        });
+      }
     }
 
     await Comment.findByIdAndDelete(req.params.id);
@@ -430,15 +474,8 @@ router.delete('/comments/:id', apiAuth, async (req, res) => {
 
 // User API
 
-// GET /api/users - Get all users (admin only)
-router.get('/users', apiAuth, async (req, res) => {
-  if (!req.session.isAdmin) {
-    return res.status(403).json({ 
-      success: false, 
-      message: 'No permission to access' 
-    });
-  }
-
+// GET /api/users - Get all users (no authentication required)
+router.get('/users', async (req, res) => {
   try {
     const users = await User.find()
       .select('-password')
