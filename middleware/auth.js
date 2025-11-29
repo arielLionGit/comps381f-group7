@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// 檢查用戶是否已登入
+// Check if user is logged in
 const requireAuth = (req, res, next) => {
   if (!req.session || !req.session.userId) {
     return res.redirect('/login');
@@ -8,7 +8,7 @@ const requireAuth = (req, res, next) => {
   next();
 };
 
-// 檢查用戶是否為訪客（未登入）
+// Check if user is a guest (not logged in)
 const requireGuest = (req, res, next) => {
   if (req.session && req.session.userId) {
     return res.redirect('/');
@@ -16,7 +16,7 @@ const requireGuest = (req, res, next) => {
   next();
 };
 
-// 檢查用戶是否為管理員
+// Check if user is admin
 const requireAdmin = (req, res, next) => {
   if (!req.session || !req.session.isAdmin) {
     return res.status(403).render('error', {
@@ -29,7 +29,7 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-// 檢查用戶是否被禁止
+// Check if user is banned
 const checkBanned = async (req, res, next) => {
   if (req.session && req.session.userId) {
     const sessionUserId = req.session.userId;
@@ -52,7 +52,7 @@ const checkBanned = async (req, res, next) => {
         });
       }
     } catch (error) {
-      console.error('檢查禁止狀態錯誤:', error);
+      console.error('Check banned status error:', error);
     }
   }
   next();
