@@ -22,9 +22,9 @@
             <tr>
               <td><a href="/admin/users/<%= user._id %>"><%= user.username %></a></td>
               <td><%= user.email %></td>
-              <td><%= new Date(user.createdAt).toLocaleDateString('en-US') %></td>
+              <td><%= new Date(user.createdAt).toLocaleDateString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) %></td>
               <td><%= user.loginCount %></td>
-              <td><%= user.lastLogin ? new Date(user.lastLogin).toLocaleString('en-US') : 'Never' %></td>
+              <td><%= user.lastLogin ? new Date(user.lastLogin).toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) : 'Never' %></td>
               <td>
                 <% if (user.isBanned) { %>
                   <span style="color: var(--danger-color);">Banned</span>
