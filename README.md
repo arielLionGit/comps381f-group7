@@ -87,6 +87,8 @@ MongoDB data model files and route handlers:
 - **Admin Account:**
   - Username: `admin`
   - Password: `123456`
+  - After login, admin will be redirected to `/admin/dashboard`
+  - Admin has access to all CRUD functions plus additional management features
 
 - **Regular Users:**
   - Can create new accounts through the registration page (`/register`)
@@ -102,8 +104,6 @@ MongoDB data model files and route handlers:
 1. Click the "Logout" button in the top-right corner of the navigation bar
 2. Or directly visit `/logout`
 3. After logout, you will be automatically redirected to the login page
-
-**Note:** Only logged-in users can access CRUD function pages. Non-logged-in users will be redirected to the login page.
 
 ### 4.2 CRUD Web Pages
 
@@ -159,6 +159,25 @@ MongoDB data model files and route handlers:
   - Automatically redirect to homepage after deletion
 
 **Note:** All CRUD pages include a logout button (located in the top-right corner of the navigation bar).
+
+#### Admin Dashboard (Admin Only):
+- **Location:** "Admin Dashboard" button in the navigation bar (visible only to admin users)
+- **Path:** `/admin/dashboard`
+- **Access:** Only accessible after logging in with admin account
+- **Features:**
+  - **Statistics Overview:** Display total users, total posts, total comments, and banned users count
+  - **User Management:** Access to `/admin/users` for managing all users
+    - View all users with pagination
+    - View user details (`/admin/users/:id`)
+    - Ban/unban users
+    - View user's posts and comments
+  - **Post Management:** Access to `/admin/posts` for managing all posts
+    - View all posts with pagination
+    - Admin can edit or delete any post
+  - **Comment Management:** Access to `/admin/comments` for managing all comments
+    - View all comments with pagination
+    - Admin can delete any comment
+  - **Recent Activity:** Display recently registered users, most active users, and recent posts
 
 ### 4.3 RESTful CRUD Services
 
