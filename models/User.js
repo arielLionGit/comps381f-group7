@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// 密碼加密中間件
+// Password encryption middleware
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
@@ -55,12 +55,12 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// 密碼比對方法
+// Password comparison method
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// 更新登入次數和時間
+// Update login count and time
 userSchema.methods.updateLoginInfo = async function() {
   this.loginCount += 1;
   this.lastLogin = new Date();
