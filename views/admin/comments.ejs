@@ -27,7 +27,7 @@
                   <span class="text-muted">Post deleted</span>
                 <% } %>
               </td>
-              <td><%= new Date(comment.createdAt).toLocaleString('en-US') %></td>
+              <td><%= new Date(comment.createdAt).toLocaleString('zh-HK', { timeZone: 'Asia/Hong_Kong' }) %></td>
               <td>
                 <form action="/comment/<%= comment._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Delete this comment?');">
                   <button type="submit" class="btn btn-sm btn-danger">Delete</button>
